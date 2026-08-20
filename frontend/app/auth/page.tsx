@@ -12,7 +12,9 @@ export default function AuthPage() {
     localStorage.setItem('skillbridge_token', 'demo-token');
     localStorage.setItem('skillbridge_account_id', role === 'learner' ? 'demo-learner-001' : 'demo-employer-001');
     localStorage.setItem('skillbridge_signed_in', 'true');
+    localStorage.setItem('skillbridge_learner_id', 'demo-learner-001');
     router.push(role === 'learner' ? '/onboarding' : '/employer');
+    
   }
 
   return (
