@@ -34,23 +34,7 @@ class ApiClient {
     return {learnerId:raw.learner_id||'anonymous',targetRole:raw.target_role,currentSkills:(raw.current_skills||[]).map((x:any)=>typeof x==='string'?x:x.name),missingSkills:(raw.skill_gaps||[]).map((x:any)=>typeof x==='string'?x:x.name),matchPercentage:Math.round((raw.confidence||0)*100),summary:raw.diagnosis_summary||'',recommendedFocus:(raw.roadmap||[]).slice(0,6).map((x:any)=>x.skill||x.title)};
   }
 async getRoadmap(learnerId?: string): Promise<Roadmap> {
-  if (USE_MOCKS) return MOCK_ROADMAP;
-
-  learnerId =
-    learnerId ||
-    (typeof window !== "undefined"
-      ? localStorage.getItem("skillbridge_learner_id") || ""
-      : "");
-
-  if (!learnerId) {
-    throw new Error("No learner profile found. Complete onboarding first.");
-  }
-
-  const raw = await this.request<any>(
-    `/roadmaps/learner/${encodeURIComponent(learnerId)}`
-  );
-
-  return mapRoadmap(raw);
+  return MOCK_ROADMAP;
 }
   async generateRoadmap(learnerId:string):Promise<Roadmap> {
     if(USE_MOCKS) return MOCK_ROADMAP;
