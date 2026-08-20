@@ -1,0 +1,9 @@
+{
+  "name": "RoadmapResult",
+  "version": "1.0",
+  "fields": {
+    "target_role": "string",
+    "steps": "array",
+    "sources": "array"
+  }
+}

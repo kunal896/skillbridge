@@ -1,0 +1,11 @@
+{
+  "name": "VerificationResult",
+  "version": "1.0",
+  "fields": {
+    "project_id": "string",
+    "status": "pass | fail",
+    "score": "number",
+    "feedback": "string",
+    "unlocks_next": "boolean"
+  }
+}

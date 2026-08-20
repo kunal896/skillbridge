@@ -1,0 +1,10 @@
+{
+  "name": "DiagnosisResult",
+  "version": "1.0",
+  "fields": {
+    "current_role": "string",
+    "target_role": "string",
+    "skills": "array",
+    "skill_gaps": "array"
+  }
+}
