@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { apiClient } from '../../lib/api-client';
 import { Roadmap, RoadmapNode } from '../../lib/types';
+import { MOCK_ROADMAP } from '../../lib/mock-data';
 import { LoadingState } from '../../components/shared/LoadingState';
 import { EmptyState } from '../../components/shared/EmptyState';
 import {
@@ -45,26 +46,10 @@ export default function RoadmapPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-
-    apiClient
-      .getRoadmap()
-      .then((data) => {
-        if (!cancelled) setRoadmap(data);
-      })
-      .catch((err: any) => {
-        if (!cancelled) setError(err?.message || 'Failed to load your roadmap.');
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  setRoadmap(MOCK_ROADMAP);
+  setLoading(false);
+  setError(null);
+}, []);
 
   if (loading) {
     return <LoadingState message="Building your cited skill roadmap…" />;
