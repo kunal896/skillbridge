@@ -89,3 +89,14 @@ class RubricCriterion:
 class ApiError:
     code: str
     message: str
+
+@dataclass
+class MatchResult:
+    employer_id: str
+    learner_id: str
+    role_title: str
+    match_score: float
+    matched_skills: list[str] = field(default_factory=list)
+    missing_skills: list[str] = field(default_factory=list)
+    verified_skills: list[str] = field(default_factory=list)
+    explanation: str = ""
