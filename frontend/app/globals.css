@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --sb-orange: #ff9900;
+  --sb-orange-dark: #e88a00;
+  --sb-navy: #232f3e;
+  --sb-navy-light: #37475a;
+  --sb-teal: #007fa3;
+  --sb-teal-dark: #006080;
+  --bg-page: #f2f3f3;
+  --bg-card: #ffffff;
+  --text-primary: #0f1111;
+  --text-secondary: #565959;
+  --border-color: #d5d9d9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Smooth language transitions */
+* {
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+/* Suppress transitions in low-bandwidth mode */
+html.low-bandwidth * {
+  animation: none !important;
+  transition: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html.low-bandwidth .decorative-bg {
+  display: none;
+}
