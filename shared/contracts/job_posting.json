@@ -1,0 +1,18 @@
+{
+  "name": "JobPosting",
+  "version": "1.0",
+  "fields": {
+    "job_id": "string",
+    "title": "string",
+    "company": "string|null",
+    "location": "string|null",
+    "region": "string|null",
+    "description": "string",
+    "skills": "string[]",
+    "source_name": "string",
+    "source_url": "string",
+    "posted_at": "datetime|null",
+    "fetched_at": "datetime",
+    "freshness_score": "number|null"
+  }
+}

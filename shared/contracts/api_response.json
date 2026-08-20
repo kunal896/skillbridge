@@ -1,0 +1,10 @@
+{
+  "name": "ApiResponse",
+  "version": "1.0",
+  "fields": {
+    "success": "boolean",
+    "data": "object|null",
+    "error": "ApiError|null",
+    "request_id": "string"
+  }
+}

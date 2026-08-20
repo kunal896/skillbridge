@@ -1,0 +1,12 @@
+{
+  "name": "DiagnosisResult",
+  "version": "1.0",
+  "fields": {
+    "learner_id": "string",
+    "target_role": "string",
+    "current_skills": "SkillAssessment[]",
+    "skill_gaps": "SkillGap[]",
+    "diagnosis_summary": "string",
+    "confidence": "number"
+  }
+}

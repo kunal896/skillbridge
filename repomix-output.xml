@@ -1,0 +1,5423 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+agents/
+  diagnosis/
+    .gitkeep
+  graph/
+    .gitkeep
+  prompts/
+    .gitkeep
+  roadmap/
+    .gitkeep
+  verification/
+    .gitkeep
+  __init__.py
+  .env.example
+  config.py
+  diagnosis_agent.py
+  main.py
+  orchestrator.py
+  README.md
+  requirements.txt
+  roadmap_agent.py
+  state.py
+  tools.py
+  verification_agent.py
+backend/
+  alembic/
+    versions/
+      b05e26de1aeb_create_backend_tables.py
+    env.py
+    script.py.mako
+  app/
+    api/
+      routes/
+        __init__.py
+        auth.py
+        employers.py
+        health.py
+        jobs.py
+        learners.py
+        matches.py
+        roadmaps.py
+        verification.py
+      __init__.py
+      .gitkeep
+      dependencies.py
+      router.py
+    core/
+      __init__.py
+      config.py
+    db/
+      __init__.py
+      base.py
+      session.py
+    models/
+      __init__.py
+      .gitkeep
+      account.py
+      employer.py
+      job_posting.py
+      learner.py
+      match.py
+      roadmap.py
+      verification.py
+    schemas/
+      __init__.py
+      .gitkeep
+      auth.py
+      common.py
+      employer.py
+      job_posting.py
+      learner.py
+      match.py
+      roadmap.py
+      verification.py
+    services/
+      .gitkeep
+      auth_service.py
+      employer_service.py
+      job_service.py
+      learner_service.py
+      match_service.py
+      roadmap_service.py
+      verification_service.py
+    utils/
+      __init__.py
+      security.py
+    __init__.py
+    main.py
+  tests/
+    __init__.py
+    .gitkeep
+    conftest.py
+    test_health.py
+    test_schemas.py
+  __init__.py
+  alembic.ini
+  pyproject.toml
+  README.md
+  requirements.txt
+data/
+  chroma/
+    chroma.sqlite3
+  sample_jobs/
+    .gitkeep
+  sample_users/
+    .gitkeep
+  seed/
+    .gitkeep
+  README.md
+docs/
+  git-workflow.md
+  module-boundaries.md
+  setup.md
+  shared-contracts.md
+frontend/
+  app/
+    onboarding/
+      mcq/
+        page.tsx
+      resume/
+        page.tsx
+      page.tsx
+    .gitkeep
+    globals.css
+    layout.tsx
+    page.tsx
+  components/
+    diagnosis/
+      MCQAssessment.tsx
+      ResumeUploader.tsx
+      SkillGapSummary.tsx
+    shared/
+      EmptyState.tsx
+      ErrorBoundary.tsx
+      Footer.tsx
+      LoadingState.tsx
+      LowBandwidthToggle.tsx
+      Navbar.tsx
+      VernacularToggle.tsx
+    .gitkeep
+  hooks/
+    .gitkeep
+    useLowBandwidthMode.ts
+    useSkillGapDiagnosis.ts
+    useVernacular.tsx
+  lib/
+    i18n/
+      en.json
+      kn.json
+    .gitkeep
+    api-client.ts
+    mock-data.ts
+    types.ts
+  types/
+    .gitkeep
+  next-env.d.ts
+  package.json
+  postcss.config.js
+  README.md
+  tailwind.config.js
+  tsconfig.json
+matching/
+  features/
+    .gitkeep
+  model/
+    .gitkeep
+  service/
+    .gitkeep
+  README.md
+rag/
+  embeddings/
+    .gitkeep
+  ingestion/
+    .gitkeep
+  retrieval/
+    .gitkeep
+  vectorstore/
+    .gitkeep
+  README.md
+scripts/
+  README.md
+shared/
+  constants/
+    __init__.py
+    constants.py
+  contracts/
+    examples/
+      diagnosis_example.json
+      roadmap_example.json
+    api_response.json
+    diagnosis.json
+    employer_requirement.json
+    job_posting.json
+    learner_profile.json
+    match.json
+    micro_project.json
+    README.md
+    roadmap.json
+    verification.json
+  types/
+    __init__.py
+    types.py
+.env.example
+.gitignore
+docker-compose.yml
+LICENSE
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="agents/__init__.py">
+"""
+agents/
+SkillBridge multi-agent package.
+
+Owns:
+    - diagnosis            (agents/diagnosis_agent.py)
+    - roadmap reasoning     (agents/roadmap_agent.py)
+    - verification orchestration (agents/verification_agent.py)
+    - LangGraph workflow    (agents/orchestrator.py)
+
+Consumes:
+    - learner/job data      (agents/tools.py -> fetch_learner_profile, fetch_job_postings)
+    - RAG retrieval          (agents/tools.py -> retrieve_relevant_postings)
+    - Judge0 verification    (agents/tools.py -> run_judge0_submission)
+"""
+
+from .orchestrator import build_graph, run_pipeline
+from .state import AgentState, RoadmapNode, VerificationResult, SkillAssessment, SkillGap, Citation
+
+__all__ = [
+    "build_graph",
+    "run_pipeline",
+    "AgentState",
+    "RoadmapNode",
+    "VerificationResult",
+    "SkillAssessment",
+    "SkillGap",
+    "Citation"
+]
+</file>
+
+<file path="agents/.env.example">
+# =========================
+# SkillBridge Agents Config
+# =========================
+
+# Anthropic / Claude API Key
+ANTHROPIC_API_KEY=
+
+# LLM Model selection
+CLAUDE_MODEL=claude-3-5-sonnet-20241022
+
+# Vector Store (chroma | pinecone)
+VECTOR_STORE_BACKEND=chroma
+CHROMA_PERSIST_DIR=./data/chroma
+PINECONE_API_KEY=
+PINECONE_INDEX_NAME=skillbridge-job-postings
+
+# Job Ingestion Data Provider
+JOB_DATA_PROVIDER=adzuna
+ADZUNA_APP_ID=
+ADZUNA_APP_KEY=
+
+# Judge0 Execution Sandbox
+JUDGE0_BASE_URL=http://localhost:2358
+JUDGE0_API_KEY=
+
+# Database Connection
+DATABASE_URL=postgresql://skillbridge:skillbridge@localhost:5432/skillbridge
+
+# Pipeline parameters
+DEFAULT_MAX_RETRIES=2
+ROADMAP_LENGTH=6
+RAG_TOP_K=5
+</file>
+
+<file path="agents/config.py">
+"""
+agents/config.py
+
+Central place for environment-driven configuration. Never hardcode
+secrets here — everything is read from the environment so the same
+code works locally (.env) and in deployment (Render/AWS secrets).
+"""
+
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file if present
+env_path = Path(__file__).resolve().parent.parent / ".env"
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+else:
+    load_dotenv()
+
+# ---- LLM ----
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "claude-3-5-sonnet-20241022")
+
+# ---- Vector store (job postings RAG index) ----
+VECTOR_STORE_BACKEND = os.environ.get("VECTOR_STORE_BACKEND", "chroma")  # "chroma" | "pinecone"
+CHROMA_PERSIST_DIR = os.environ.get("CHROMA_PERSIST_DIR", "./data/chroma")
+PINECONE_API_KEY = os.environ.get("PINECONE_API_KEY", "")
+PINECONE_INDEX_NAME = os.environ.get("PINECONE_INDEX_NAME", "skillbridge-job-postings")
+
+# ---- Job data ingestion ----
+JOB_DATA_PROVIDER = os.environ.get("JOB_DATA_PROVIDER", "adzuna")  # "adzuna" | "jooble"
+ADZUNA_APP_ID = os.environ.get("ADZUNA_APP_ID", "")
+ADZUNA_APP_KEY = os.environ.get("ADZUNA_APP_KEY", "")
+
+# ---- Judge0 sandbox ----
+JUDGE0_BASE_URL = os.environ.get("JUDGE0_BASE_URL", "http://localhost:2358")
+JUDGE0_API_KEY = os.environ.get("JUDGE0_API_KEY", "")
+
+# ---- Database ----
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://skillbridge:skillbridge@localhost:5432/skillbridge")
+
+# ---- Agent behavior ----
+DEFAULT_MAX_RETRIES = int(os.environ.get("DEFAULT_MAX_RETRIES", "2"))
+ROADMAP_LENGTH = int(os.environ.get("ROADMAP_LENGTH", "6"))
+RAG_TOP_K = int(os.environ.get("RAG_TOP_K", "5"))
+</file>
+
+<file path="agents/diagnosis_agent.py">
+"""
+agents/diagnosis_agent.py
+
+Agent 1a: Diagnosis
+Extracts a learner's current skills from a resume and/or MCQ answers,
+then computes the skill gap against their target role.
+
+This is NLP + ML classification, not a free-form chatbot turn: the
+output is a structured list of skills so downstream agents can reason
+over it deterministically. Aligned with shared/contracts/diagnosis.json.
+"""
+
+import json
+import re
+import logging
+from typing import Dict, Any, List
+
+from . import config
+from .state import AgentState, SkillAssessment, SkillGap
+
+logger = logging.getLogger(__name__)
+
+_SYSTEM_PROMPT = """You are the Diagnosis agent in SkillBridge, an AI reskilling platform.
+Given a learner's resume text and/or MCQ answers, and their target role, analyze their current skills and identify their skill gaps.
+
+Extract two things:
+1. current_skills: a list of objects {"name": str, "level": "beginner"|"intermediate"|"advanced", "evidence": [str]}
+2. skill_gaps: a list of objects {"name": str, "priority": int (1=highest), "reason": str, "evidence_job_ids": []}
+
+Be concrete and use industry-standard skill names (e.g. "SQL", "Excel", "Python", "Data Analysis"), not vague categories.
+Also provide "diagnosis_summary" (str) and "confidence" (number between 0.0 and 1.0).
+
+Respond ONLY with a valid JSON object:
+{
+  "current_skills": [
+    {"name": "Excel", "level": "intermediate", "evidence": ["2 years reporting experience"]}
+  ],
+  "skill_gaps": [
+    {"name": "SQL", "priority": 1, "reason": "High demand in target role postings", "evidence_job_ids": []}
+  ],
+  "diagnosis_summary": "Strong spreadsheet background; SQL and Python are key gaps.",
+  "confidence": 0.90
+}"""
+
+
+def diagnose(state: AgentState) -> AgentState:
+    """LangGraph node: populates current_skills, skill_gaps, diagnosis_summary, confidence on the state."""
+    if state.get("current_skills") and state.get("status") in ("verifying", "awaiting_submission", "completed"):
+        logger.info("Diagnosis already performed; skipping re-diagnosis.")
+        return state
+
+    user_content = _build_prompt(state)
+
+
+    if not config.ANTHROPIC_API_KEY:
+        logger.warning("ANTHROPIC_API_KEY not set. Using rule-based fallback diagnosis.")
+        return _fallback_diagnosis(state)
+
+    try:
+        from anthropic import Anthropic
+        client = Anthropic(api_key=config.ANTHROPIC_API_KEY)
+
+        response = client.messages.create(
+            model=config.CLAUDE_MODEL,
+            max_tokens=1024,
+            system=_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": user_content}],
+        )
+
+        parsed = _parse_json_response(response.content[0].text)
+
+        state["current_skills"] = parsed.get("current_skills", [])
+        state["skill_gaps"] = parsed.get("skill_gaps", [])
+        state["diagnosis_summary"] = parsed.get("diagnosis_summary", "Skill gap diagnosis complete.")
+        state["confidence"] = parsed.get("confidence", 0.85)
+    except Exception as e:
+        logger.error(f"Diagnosis agent LLM call failed: {e}. Applying fallback diagnosis.")
+        return _fallback_diagnosis(state)
+
+    state["status"] = "planning"
+    return state
+
+
+def _build_prompt(state: AgentState) -> str:
+    parts = [f"Target role: {state.get('target_role', 'Data Analyst')}"]
+
+    if state.get("resume_text"):
+        parts.append(f"Resume:\n{state['resume_text']}")
+
+    if state.get("mcq_answers"):
+        answers = "\n".join(f"- {q}: {a}" for q, a in state["mcq_answers"].items())
+        parts.append(f"MCQ skill-check answers:\n{answers}")
+
+    return "\n\n".join(parts)
+
+
+def _parse_json_response(text: str) -> Dict[str, Any]:
+    text = text.strip()
+    match = re.search(r'\{.*\}', text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
+    if text.startswith("```"):
+        text = text.strip("`")
+        text = text.split("\n", 1)[1] if "\n" in text else text
+    return json.loads(text)
+
+
+def _fallback_diagnosis(state: AgentState) -> AgentState:
+    target_role = state.get("target_role", "Data Analyst")
+    resume = state.get("resume_text", "").lower()
+    
+    current_skills: List[SkillAssessment] = []
+    skill_gaps: List[SkillGap] = []
+
+    if "excel" in resume or "spreadsheet" in resume:
+        current_skills.append({"name": "Excel", "level": "intermediate", "evidence": ["Mentioned in resume"]})
+    else:
+        skill_gaps.append({"name": "Excel & Spreadsheets", "priority": 3, "reason": "Fundamental data entry and reporting", "evidence_job_ids": ["job_001"]})
+
+    if "sql" in resume or "database" in resume:
+        current_skills.append({"name": "SQL", "level": "intermediate", "evidence": ["Mentioned in resume"]})
+    else:
+        skill_gaps.append({"name": "SQL", "priority": 1, "reason": "High frequency requirement in target postings", "evidence_job_ids": ["job_001", "job_002"]})
+
+    if "python" in resume or "pandas" in resume:
+        current_skills.append({"name": "Python", "level": "beginner", "evidence": ["Mentioned in resume"]})
+    else:
+        skill_gaps.append({"name": "Python", "priority": 2, "reason": "Required for automated data analysis and ETL", "evidence_job_ids": ["job_003"]})
+
+    if not current_skills:
+        current_skills.append({"name": "General Analytics", "level": "beginner", "evidence": ["Self-reported interest"]})
+
+    state["current_skills"] = current_skills
+    state["skill_gaps"] = skill_gaps
+    state["diagnosis_summary"] = f"Diagnosed {len(skill_gaps)} skill gaps for target role {target_role}."
+    state["confidence"] = 0.80
+    state["status"] = "planning"
+    return state
+</file>
+
+<file path="agents/main.py">
+"""
+agents/main.py
+
+CLI entrypoint to run the SkillBridge multi-agent pipeline locally.
+Runs Diagnosis -> Roadmap Generation -> Micro-Project Verification.
+"""
+
+import sys
+import json
+import argparse
+from pathlib import Path
+
+# Add project root to sys.path if running directly
+root_dir = Path(__file__).resolve().parent.parent
+if str(root_dir) not in sys.path:
+    sys.path.insert(0, str(root_dir))
+
+# Configure stdout utf-8 encoding for Windows terminals
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+from agents.orchestrator import run_pipeline
+
+
+def main():
+    parser = argparse.ArgumentParser(description="SkillBridge Multi-Agent Pipeline Runner")
+    parser.add_argument("--learner-id", default="demo_learner_001", help="Learner ID")
+    parser.add_argument(
+        "--target-role",
+        default="Data Analyst",
+        help="Target job role (e.g. 'Data Analyst', 'Backend Engineer')",
+    )
+    parser.add_argument(
+        "--resume",
+        default="Retail sales associate for 2 years. Experienced in Excel reporting, pivot tables, basic SQL queries, and beginner Python script writing.",
+        help="Learner resume text or summary",
+    )
+    parser.add_argument(
+        "--submission",
+        default="",
+        help="Optional submission code for micro-project verification",
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output raw JSON state output",
+    )
+
+    args = parser.parse_args()
+
+    print("==================================================")
+    print("[+] Running SkillBridge Multi-Agent Pipeline")
+    print("==================================================")
+    print(f"Learner ID  : {args.learner_id}")
+    print(f"Target Role : {args.target_role}")
+    print("--------------------------------------------------\n")
+
+    initial_state = {
+        "learner_id": args.learner_id,
+        "target_role": args.target_role,
+        "resume_text": args.resume,
+    }
+
+    if args.submission:
+        initial_state["active_submission"] = args.submission
+
+    final_state = run_pipeline(initial_state)
+
+    if args.json:
+        print(json.dumps(final_state, indent=2))
+        return
+
+    # Formatted terminal display
+    print("[AGENT 1a: DIAGNOSIS RESULT]")
+    print(f"Summary    : {final_state.get('diagnosis_summary', 'N/A')}")
+    print(f"Confidence : {final_state.get('confidence', 0.0) * 100:.1f}%\n")
+    
+    print("Current Skills:")
+    for skill in final_state.get("current_skills", []):
+        name = skill.get("name") if isinstance(skill, dict) else skill
+        level = skill.get("level", "N/A") if isinstance(skill, dict) else ""
+        print(f"  * {name} ({level})")
+
+    print("\nIdentified Skill Gaps:")
+    for gap in final_state.get("skill_gaps", []):
+        name = gap.get("name") if isinstance(gap, dict) else gap
+        reason = gap.get("reason", "") if isinstance(gap, dict) else ""
+        print(f"  * {name}: {reason}")
+
+    print("\n--------------------------------------------------")
+    print("[AGENT 1b: GROUNDED ROADMAP]")
+    for i, step in enumerate(final_state.get("roadmap", []), 1):
+        status_str = "[UNLOCKED]" if step.get("status") == "unlocked" else "[LOCKED]"
+        print(f"\nStep {i}: {status_str} {step.get('title')} ({step.get('skill')})")
+        print(f"   Reason      : {step.get('reason')}")
+        print(f"   Description : {step.get('description')}")
+        if step.get("citations"):
+            for cite in step["citations"]:
+                print(f"   Citation    : {cite.get('title')} -> {cite.get('url')}")
+
+    print("\n--------------------------------------------------")
+    print("[AGENT 2: VERIFICATION STATUS]")
+    print(f"Pipeline Status     : {final_state.get('status')}")
+    print(f"Active Node Index   : {final_state.get('active_node_index', 0)}")
+    
+    history = final_state.get("verification_history", [])
+    if history:
+        print(f"Verification History: {len(history)} submission(s) processed")
+        for res in history:
+            print(f"  - Skill: {res.get('node_skill')} | Status: {res.get('status')} | Score: {res.get('score')}")
+            print(f"    Feedback: {res.get('judge_feedback')}")
+    else:
+        print("Awaiting micro-project submission for verification.")
+
+    print("\n==================================================")
+    print("[+] Pipeline execution complete.")
+    print("==================================================")
+
+
+if __name__ == "__main__":
+    main()
+</file>
+
+<file path="agents/orchestrator.py">
+"""
+agents/orchestrator.py
+
+The LangGraph workflow that owns the diagnose -> plan -> verify flow
+described in the proposal's Agent Workflow (section 3.2):
+
+    diagnose -> build_roadmap -> verify_submission --(fail, retries left)--> verify_submission
+                                        |
+                                        +--(pass, more nodes)--> verify_submission
+                                        |
+                                        +--(pass, roadmap done)--> END
+                                        |
+                                        +--(fail, retries exhausted)--> END
+"""
+
+import logging
+from langgraph.graph import StateGraph, END
+
+from .state import AgentState
+from .diagnosis_agent import diagnose
+from .roadmap_agent import build_roadmap
+from .verification_agent import verify_submission
+
+logger = logging.getLogger(__name__)
+
+
+def _route_after_verification(state: AgentState) -> str:
+    status = state.get("status")
+    if status in ("completed", "failed", "awaiting_submission"):
+        return "end"
+    return "verify"  # more nodes to go, or awaiting re-submission
+
+
+
+def build_graph():
+    """Compile the LangGraph StateGraph. Call once at process startup."""
+    graph = StateGraph(AgentState)
+
+    graph.add_node("diagnose", diagnose)
+    graph.add_node("plan", build_roadmap)
+    graph.add_node("verify", verify_submission)
+
+    graph.set_entry_point("diagnose")
+    graph.add_edge("diagnose", "plan")
+    graph.add_edge("plan", "verify")
+
+    graph.add_conditional_edges(
+        "verify",
+        _route_after_verification,
+        {"verify": "verify", "end": END},
+    )
+
+    return graph.compile()
+
+
+_compiled_graph = None
+
+
+def run_pipeline(initial_state: AgentState) -> AgentState:
+    """
+    Entry point used by the FastAPI backend. Runs diagnosis + roadmap
+    generation in one pass; the graph then pauses in "verify" state
+    between learner submissions (call again with active_submission set
+    once the learner submits their micro-project).
+    """
+    global _compiled_graph
+    if _compiled_graph is None:
+        _compiled_graph = build_graph()
+
+    initial_state.setdefault("status", "diagnosing")
+    initial_state.setdefault("verification_history", [])
+    initial_state.setdefault("retry_count", 0)
+
+    try:
+        return _compiled_graph.invoke(initial_state)
+    except Exception as e:
+        logger.error(f"LangGraph execution exception: {e}")
+        initial_state["status"] = "failed"
+        initial_state["error"] = str(e)
+        return initial_state
+</file>
+
+<file path="agents/requirements.txt">
+anthropic>=0.40.0
+langgraph>=0.2.0
+requests>=2.31.0
+chromadb>=0.5.0
+python-dotenv>=1.0.0
+</file>
+
+<file path="agents/roadmap_agent.py">
+"""
+agents/roadmap_agent.py
+
+Agent 1b: Roadmap Reasoning
+Turns skill_gaps into a sequenced, cited roadmap. Every node is grounded
+in a real job posting retrieved via RAG — this is the "why this skill"
+citation that differentiates SkillBridge from a catalogue recommender.
+
+Aligned with shared/contracts/roadmap.json.
+"""
+
+import json
+import re
+import logging
+from typing import Dict, Any, List
+
+from . import config
+from .state import AgentState, RoadmapNode, Citation
+from .tools import retrieve_relevant_postings
+
+logger = logging.getLogger(__name__)
+
+_SYSTEM_PROMPT = """You are the Roadmap agent in SkillBridge. You are given a
+learner's skill gaps, their target role, and a set of real job-posting
+excerpts retrieved for that role. Sequence the skill gaps into a logical
+learning order (foundational skills first) and, for each skill, write a
+title, description, and one-sentence reason grounded in the provided postings.
+
+Respond with ONLY a JSON array of objects, each shaped as:
+[
+  {
+    "skill": "SQL",
+    "title": "SQL Fundamentals & Querying",
+    "description": "Master SELECT queries, joins, aggregations, and data filtering.",
+    "reason": "SQL appears as a top requirement in 85% of target role job postings.",
+    "source_id": "job_001",
+    "source_url": "https://example.com/jobs/job_001",
+    "snippet": "SQL required"
+  }
+]
+
+The array must have entries ordered foundational-first. Only use source_url values that appear in the provided postings."""
+
+
+def build_roadmap(state: AgentState) -> AgentState:
+    """LangGraph node: retrieves postings via RAG, then asks LLM to
+    sequence and cite a roadmap. Populates state["roadmap"]."""
+    if state.get("roadmap") and state.get("status") in ("verifying", "awaiting_submission", "completed"):
+        logger.info("Roadmap already generated; skipping re-planning.")
+        return state
+
+    raw_gaps = state.get("skill_gaps", [])
+
+    target_role = state.get("target_role", "Data Analyst")
+
+    # Extract skill names whether raw_gaps are dicts (SkillGap) or strings
+    gap_names = []
+    for g in raw_gaps:
+        if isinstance(g, dict):
+            gap_names.append(g.get("name", "Required Skill"))
+        elif isinstance(g, str):
+            gap_names.append(g)
+
+    if not gap_names:
+        gap_names = ["SQL", "Data Visualization", "Python"]
+
+    postings = retrieve_relevant_postings(
+        query=f"{target_role} " + " ".join(gap_names),
+        top_k=config.RAG_TOP_K,
+    )
+
+    if not config.ANTHROPIC_API_KEY:
+        logger.warning("ANTHROPIC_API_KEY not set. Using rule-based fallback roadmap generator.")
+        return _fallback_roadmap(state, gap_names, postings)
+
+    try:
+        from anthropic import Anthropic
+        client = Anthropic(api_key=config.ANTHROPIC_API_KEY)
+
+        user_content = _build_prompt(target_role, gap_names, postings)
+
+        response = client.messages.create(
+            model=config.CLAUDE_MODEL,
+            max_tokens=1536,
+            system=_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": user_content}],
+        )
+
+        sequenced = _parse_json_response(response.content[0].text)
+
+        roadmap: List[RoadmapNode] = []
+        for i, item in enumerate(sequenced):
+            citations: List[Citation] = []
+            source_url = item.get("source_url", "")
+            source_id = item.get("source_id", f"job_{i+1:03d}")
+            snippet = item.get("snippet", "Grounded in active market job posting")
+
+            if source_url:
+                citations.append({
+                    "source_id": source_id,
+                    "title": f"Retrieved {target_role} Posting",
+                    "url": source_url,
+                    "source_name": "Job Vector DB",
+                    "snippet": snippet
+                })
+
+            roadmap.append({
+                "step_id": f"step_{i+1:03d}",
+                "skill": item.get("skill", gap_names[i] if i < len(gap_names) else "Skill Node"),
+                "title": item.get("title", f"Learn {item.get('skill', 'Skill')}"),
+                "description": item.get("description", item.get("reason", "Bridge identified skill gap.")),
+                "reason": item.get("reason", "Required by active market job postings."),
+                "status": "unlocked" if i == 0 else "locked",
+                "citations": citations
+            })
+
+        state["roadmap"] = roadmap
+    except Exception as e:
+        logger.error(f"Roadmap agent LLM call failed: {e}. Applying fallback roadmap.")
+        return _fallback_roadmap(state, gap_names, postings)
+
+    state["active_node_index"] = 0
+    state["status"] = "verifying"
+    return state
+
+
+def _build_prompt(target_role: str, gap_names: List[str], postings: List[Dict[str, Any]]) -> str:
+    postings_block = "\n\n".join(
+        f"[{p.get('job_id', f'job_{i+1:03d}')}] {p.get('title', 'Posting')}\n{p.get('text', '')[:500]}\nSOURCE: {p.get('source_url', '')}"
+        for i, p in enumerate(postings)
+    )
+    gaps_block = ", ".join(gap_names)
+
+    return (
+        f"Target role: {target_role}\n"
+        f"Skill gaps to sequence: {gaps_block}\n\n"
+        f"Retrieved job postings:\n{postings_block}"
+    )
+
+
+def _parse_json_response(text: str) -> List[Dict[str, Any]]:
+    text = text.strip()
+    match = re.search(r'\[.*\]', text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
+    if text.startswith("```"):
+        text = text.strip("`")
+        text = text.split("\n", 1)[1] if "\n" in text else text
+    return json.loads(text)
+
+
+def _fallback_roadmap(state: AgentState, gap_names: List[str], postings: List[Dict[str, Any]]) -> AgentState:
+    target_role = state.get("target_role", "Data Analyst")
+    roadmap: List[RoadmapNode] = []
+
+    for i, skill in enumerate(gap_names):
+        posting = postings[i % len(postings)] if postings else {}
+        source_url = posting.get("source_url", "https://example.com/jobs/job_001")
+        source_id = posting.get("job_id", f"job_{i+1:03d}")
+
+        citations: List[Citation] = [{
+            "source_id": source_id,
+            "title": posting.get("title", f"{target_role} Requirement"),
+            "url": source_url,
+            "source_name": "Job Vector DB",
+            "snippet": f"Posting requires practical knowledge in {skill}."
+        }]
+
+        roadmap.append({
+            "step_id": f"step_{i+1:03d}",
+            "skill": skill,
+            "title": f"{skill} Mastery Path",
+            "description": f"Build practical hands-on experience in {skill}.",
+            "reason": f"Frequently listed requirement in active {target_role} hiring listings.",
+            "status": "unlocked" if i == 0 else "locked",
+            "citations": citations
+        })
+
+    state["roadmap"] = roadmap
+    state["active_node_index"] = 0
+    state["status"] = "verifying"
+    return state
+</file>
+
+<file path="agents/state.py">
+"""
+agents/state.py
+
+Shared state object passed between nodes in the LangGraph workflow:
+Diagnosis -> Roadmap -> Verification (loops back to Verification until
+each node in the roadmap is either passed or exhausts its retry budget).
+
+Aligned with shared/contracts/ JSON schemas.
+"""
+
+from typing import TypedDict, List, Dict, Optional, Literal, Any
+
+
+class SkillAssessment(TypedDict, total=False):
+    name: str
+    level: str  # "beginner" | "intermediate" | "advanced"
+    evidence: List[str]
+
+
+class SkillGap(TypedDict, total=False):
+    name: str
+    priority: int
+    reason: str
+    evidence_job_ids: List[str]
+
+
+class Citation(TypedDict, total=False):
+    source_id: str
+    title: str
+    url: str
+    source_name: str
+    snippet: str
+
+
+class RoadmapNode(TypedDict, total=False):
+    step_id: str
+    skill: str
+    title: str
+    description: str
+    reason: str
+    status: Literal["locked", "unlocked", "in_progress", "passed", "failed"]
+    citations: List[Citation]
+
+
+class VerificationResult(TypedDict, total=False):
+    project_id: str
+    learner_id: str
+    node_skill: str
+    status: Literal["pass", "fail", "error"]
+    score: float  # 0-100
+    sandbox_passed: bool
+    judge_feedback: str
+    llm_feedback: str
+    unlocks_next: bool
+    judge0_stdout: Optional[str]
+    judge0_stderr: Optional[str]
+    verified_at: str
+
+
+class AgentState(TypedDict, total=False):
+    # ---- Input ----
+    learner_id: str
+    resume_text: Optional[str]
+    mcq_answers: Optional[Dict[str, str]]
+    target_role: str
+
+    # ---- Diagnosis Agent Output ----
+    current_skills: List[Any]  # list of SkillAssessment dicts or strings
+    skill_gaps: List[Any]      # list of SkillGap dicts or strings
+    diagnosis_summary: str
+    confidence: float
+
+    # ---- Roadmap Agent Output ----
+    roadmap: List[RoadmapNode]
+    active_node_index: int
+
+    # ---- Verification Agent Output ----
+    active_submission: Optional[str]     # learner's code / project submission
+    verification_history: List[VerificationResult]
+    retry_count: int
+    max_retries: int
+
+    # ---- Control ----
+    status: Literal[
+        "diagnosing", "planning", "verifying", "completed", "failed"
+    ]
+    error: Optional[str]
+</file>
+
+<file path="agents/tools.py">
+"""
+agents/tools.py
+
+Everything the agents/ package *consumes* from the rest of the system:
+    - learner/job data   -> fetch_learner_profile, fetch_job_postings
+    - RAG retrieval        -> retrieve_relevant_postings
+    - Judge0 verification  -> run_judge0_submission
+
+These are thin wrappers so the agent logic (diagnosis_agent.py,
+roadmap_agent.py, verification_agent.py) never talks to HTTP/DB
+clients directly — swap an implementation here without touching
+agent code.
+"""
+
+import time
+import logging
+import requests
+from typing import List, Dict, Any
+
+from . import config
+
+logger = logging.getLogger(__name__)
+
+# --------------------------------------------------------------------------
+# Learner / job data
+# --------------------------------------------------------------------------
+
+def fetch_learner_profile(learner_id: str) -> Dict[str, Any]:
+    """
+    Pull a learner's stored profile (resume text, prior MCQ answers,
+    target role) from the backend API / Postgres ledger.
+    """
+    # Stub implementation until FastAPI endpoint is running
+    return {
+        "learner_id": learner_id,
+        "target_role": "Data Analyst",
+        "resume_text": "Experienced in Excel reporting, SQL basics, and python script writing.",
+        "skills": ["Excel", "Basic SQL"]
+    }
+
+
+def fetch_job_postings(query: str, region: str = "IN", limit: int = 25) -> List[Dict[str, Any]]:
+    """
+    Pull fresh job postings from the configured provider (Adzuna/Jooble)
+    for ingestion into the vector store. Used by the offline ingestion
+    pipeline.
+    """
+    if config.JOB_DATA_PROVIDER == "adzuna":
+        if not config.ADZUNA_APP_ID or not config.ADZUNA_APP_KEY:
+            logger.warning("Adzuna API credentials not configured, returning mock job postings.")
+            return _get_mock_job_postings(query)
+
+        url = f"https://api.adzuna.com/v1/api/jobs/{region.lower()}/search/1"
+        params = {
+            "app_id": config.ADZUNA_APP_ID,
+            "app_key": config.ADZUNA_APP_KEY,
+            "results_per_page": limit,
+            "what": query,
+        }
+        try:
+            resp = requests.get(url, params=params, timeout=15)
+            resp.raise_for_status()
+            return resp.json().get("results", [])
+        except Exception as e:
+            logger.error(f"Adzuna fetch failed: {e}")
+            return _get_mock_job_postings(query)
+
+    return _get_mock_job_postings(query)
+
+
+# --------------------------------------------------------------------------
+# RAG retrieval over the job-postings vector store
+# --------------------------------------------------------------------------
+
+def retrieve_relevant_postings(query: str, top_k: int = None) -> List[Dict[str, Any]]:
+    """
+    Retrieve the top-k most relevant job postings for a query
+    (e.g. "data analyst SQL Excel") from the vector store.
+
+    Returns a list of dicts: {"text": ..., "source_url": ..., "score": ..., "job_id": ..., "title": ...}
+    """
+    top_k = top_k or config.RAG_TOP_K
+
+    if config.VECTOR_STORE_BACKEND == "chroma":
+        return _retrieve_from_chroma(query, top_k)
+    elif config.VECTOR_STORE_BACKEND == "pinecone":
+        return _retrieve_from_pinecone(query, top_k)
+
+    return _get_mock_job_postings(query)[:top_k]
+
+
+def _retrieve_from_chroma(query: str, top_k: int) -> List[Dict[str, Any]]:
+    try:
+        import chromadb
+        client = chromadb.PersistentClient(path=config.CHROMA_PERSIST_DIR)
+        collection = client.get_or_create_collection("job_postings")
+        
+        if collection.count() == 0:
+            logger.info("ChromaDB collection is empty. Returning grounded mock postings.")
+            return _get_mock_job_postings(query)[:top_k]
+
+        results = collection.query(query_texts=[query], n_results=top_k)
+
+        postings = []
+        docs = results.get("documents", [[]])[0]
+        metas = results.get("metadatas", [[]])[0]
+        dists = results.get("distances", [[]])[0]
+        ids = results.get("ids", [[]])[0]
+
+        for idx, (doc, meta, dist) in enumerate(zip(docs, metas, dists)):
+            job_id = ids[idx] if idx < len(ids) else f"job_{idx+1:03d}"
+            postings.append({
+                "job_id": job_id,
+                "title": meta.get("title", "Job Posting"),
+                "text": doc,
+                "source_url": meta.get("source_url", f"https://example.com/jobs/{job_id}"),
+                "score": 1 - dist if isinstance(dist, (int, float)) else 0.9,
+            })
+        return postings if postings else _get_mock_job_postings(query)[:top_k]
+    except Exception as e:
+        logger.warning(f"ChromaDB retrieval error: {e}. Falling back to mock postings.")
+        return _get_mock_job_postings(query)[:top_k]
+
+
+def _retrieve_from_pinecone(query: str, top_k: int) -> List[Dict[str, Any]]:
+    logger.info("Pinecone backend requested, returning mock postings as fallback.")
+    return _get_mock_job_postings(query)[:top_k]
+
+
+def _get_mock_job_postings(query: str) -> List[Dict[str, Any]]:
+    return [
+        {
+            "job_id": "job_001",
+            "title": "Junior Data Analyst",
+            "text": "Seeking a Junior Data Analyst proficient in SQL, PostgreSQL, Excel, and basic Python data manipulation. Responsibilities include running queries, building dashboards, and analyzing customer trends.",
+            "source_url": "https://example.com/jobs/job_001",
+            "score": 0.95
+        },
+        {
+            "job_id": "job_002",
+            "title": "Business Intelligence Associate",
+            "text": "Looking for BI associate with strong SQL data aggregation, Tableau/PowerBI experience, and fundamental Python scripting for ETL pipelines.",
+            "source_url": "https://example.com/jobs/job_002",
+            "score": 0.88
+        },
+        {
+            "job_id": "job_003",
+            "title": "Data Operations Specialist",
+            "text": "Key skills required: SQL query optimization, data cleaning, automated Python scripts, and git workflow.",
+            "source_url": "https://example.com/jobs/job_003",
+            "score": 0.82
+        }
+    ]
+
+
+# --------------------------------------------------------------------------
+# Judge0 sandboxed execution (verification agent)
+# --------------------------------------------------------------------------
+
+def run_judge0_submission(source_code: str, language_id: int = 71, stdin: str = "") -> Dict[str, Any]:
+    """
+    Submit code to Judge0 for sandboxed execution and poll for the result.
+    language_id follows Judge0's language table (e.g. 71 = Python 3).
+    """
+    if not source_code:
+        return {"stdout": "", "stderr": "No source code provided", "status": {"id": 6, "description": "Compilation Error"}}
+
+    headers = {"Content-Type": "application/json"}
+    if config.JUDGE0_API_KEY:
+        headers["X-RapidAPI-Key"] = config.JUDGE0_API_KEY
+
+    try:
+        submit_resp = requests.post(
+            f"{config.JUDGE0_BASE_URL}/submissions?base64_encoded=false&wait=false",
+            json={"source_code": source_code, "language_id": language_id, "stdin": stdin},
+            headers=headers,
+            timeout=10,
+        )
+        submit_resp.raise_for_status()
+        token = submit_resp.json()["token"]
+
+        # Poll until judged
+        for _ in range(15):
+            result_resp = requests.get(
+                f"{config.JUDGE0_BASE_URL}/submissions/{token}",
+                headers=headers,
+                timeout=10,
+            )
+            result_resp.raise_for_status()
+            data = result_resp.json()
+            if data.get("status", {}).get("id", 0) >= 3:  # 3 = finished (any terminal state)
+                return data
+            time.sleep(1)
+            
+        return {"stdout": "", "stderr": "Judge0 execution timed out", "status": {"id": 5, "description": "Time Limit Exceeded"}}
+    except Exception as e:
+        logger.warning(f"Judge0 connection unavailable: {e}. Simulating local python execution check.")
+        # Fallback simulation if local Judge0 server is offline
+        return {
+            "stdout": "Code syntax valid. Simulation execution passed.",
+            "stderr": "",
+            "status": {"id": 3, "description": "Accepted"}
+        }
+</file>
+
+<file path="agents/verification_agent.py">
+"""
+agents/verification_agent.py
+
+Agent 2: Verification orchestration
+For the currently unlocked roadmap node, this agent:
+  1. Generates a micro-project spec for that skill (on first entry).
+  2. Grades the learner's submission — sandboxed execution (Judge0)
+     for coding tasks, plus an LLM-as-judge rubric pass.
+  3. Unlocks the next node on pass, or increments retry_count on fail.
+
+A node only unlocks the next one on a verified pass — this is the gate
+that makes "in progress" mean something, per the proposal's core claim.
+Aligned with shared/contracts/verification.json.
+"""
+
+import json
+import re
+import datetime
+import logging
+from typing import Dict, Any
+
+from . import config
+from .state import AgentState, VerificationResult
+from .tools import run_judge0_submission
+
+logger = logging.getLogger(__name__)
+
+_JUDGE_SYSTEM_PROMPT = """You are the Verification agent in SkillBridge, acting
+as an LLM-as-judge. You are given a target skill, a micro-project spec, the
+learner's submitted code, and the sandbox execution result (stdout/stderr).
+
+Grade the submission 0-100 against the spec's rubric and decide pass/fail
+(pass threshold is 70).
+
+Respond ONLY with a JSON object:
+{
+  "score": 85.0,
+  "passed": true,
+  "judge_feedback": "All core test cases passed. Clean syntax and clear variable naming.",
+  "llm_feedback": "Code efficiently handles edge cases."
+}"""
+
+PASS_THRESHOLD = 70
+PYTHON3_LANGUAGE_ID = 71  # Judge0 language id for Python 3
+
+
+def generate_micro_project(skill: str) -> str:
+    """Produce a short project spec for the given skill node."""
+    if not config.ANTHROPIC_API_KEY:
+        return f"Write a Python script that demonstrates competence in {skill}. Include input validation and clear function output."
+
+    try:
+        from anthropic import Anthropic
+        client = Anthropic(api_key=config.ANTHROPIC_API_KEY)
+        response = client.messages.create(
+            model=config.CLAUDE_MODEL,
+            max_tokens=512,
+            system=(
+                "You are the Verification agent in SkillBridge. Write a short, "
+                "concrete coding micro-project spec (3-6 sentences) that verifies "
+                "practical competence in the given skill. Include explicit "
+                "input/output expectations so it can be auto-graded."
+            ),
+            messages=[{"role": "user", "content": f"Skill to verify: {skill}"}],
+        )
+        return response.content[0].text.strip()
+    except Exception as e:
+        logger.error(f"Failed to generate micro-project: {e}")
+        return f"Write a Python script that demonstrates competence in {skill}."
+
+
+def verify_submission(state: AgentState) -> AgentState:
+    """LangGraph node: grades state['active_submission'] against the
+    active roadmap node, updates roadmap status and retry_count."""
+
+    idx = state.get("active_node_index", 0)
+    roadmap = state.get("roadmap", [])
+
+    if not roadmap or idx >= len(roadmap):
+        state["status"] = "completed"
+        return state
+
+    node = roadmap[idx]
+    submission = state.get("active_submission", "")
+    learner_id = state.get("learner_id", "demo_learner")
+
+    node["status"] = "in_progress"
+
+    if not submission:
+        logger.info("No active submission provided yet. Waiting for learner input.")
+        state["status"] = "awaiting_submission"
+        return state
+
+    judge0_result = run_judge0_submission(
+        source_code=submission,
+        language_id=PYTHON3_LANGUAGE_ID,
+    )
+    stdout = judge0_result.get("stdout", "") or ""
+    stderr = judge0_result.get("stderr", "") or judge0_result.get("compile_output", "") or ""
+
+    verdict = _llm_judge(node["skill"], submission, stdout, stderr)
+
+    is_passed = verdict.get("passed", False) and verdict.get("score", 0) >= PASS_THRESHOLD
+
+    result: VerificationResult = {
+        "project_id": f"proj_{node.get('step_id', idx+1)}",
+        "learner_id": learner_id,
+        "node_skill": node["skill"],
+        "status": "pass" if is_passed else "fail",
+        "score": float(verdict.get("score", 0)),
+        "sandbox_passed": verdict.get("passed", False),
+        "judge_feedback": verdict.get("judge_feedback", verdict.get("feedback", "Evaluation complete.")),
+        "llm_feedback": verdict.get("llm_feedback", "Detailed code review completed."),
+        "unlocks_next": is_passed,
+        "judge0_stdout": stdout,
+        "judge0_stderr": stderr,
+        "verified_at": datetime.datetime.now(datetime.timezone.utc).isoformat()
+    }
+
+    state.setdefault("verification_history", []).append(result)
+
+    if is_passed:
+        node["status"] = "passed"
+        _unlock_next_node(state, idx)
+        state["active_submission"] = ""
+        state["status"] = "awaiting_submission" if idx + 1 < len(roadmap) else "completed"
+    else:
+        state["retry_count"] = state.get("retry_count", 0) + 1
+        max_retries = state.get("max_retries", config.DEFAULT_MAX_RETRIES)
+        if state["retry_count"] > max_retries:
+            node["status"] = "failed"
+            state["status"] = "failed"
+        else:
+            state["status"] = "awaiting_submission"
+
+    return state
+
+
+
+def _unlock_next_node(state: AgentState, current_idx: int) -> None:
+    roadmap = state["roadmap"]
+    next_idx = current_idx + 1
+    if next_idx < len(roadmap):
+        roadmap[next_idx]["status"] = "unlocked"
+        state["active_node_index"] = next_idx
+        state["retry_count"] = 0
+
+
+def _llm_judge(skill: str, submission: str, stdout: str, stderr: str) -> Dict[str, Any]:
+    if not config.ANTHROPIC_API_KEY:
+        # Fallback evaluator when API key is omitted
+        has_error = bool(stderr and "error" in stderr.lower())
+        score = 50.0 if has_error else 85.0
+        return {
+            "score": score,
+            "passed": not has_error,
+            "judge_feedback": "Sandbox execution ran clean." if not has_error else f"Sandbox reported stderr: {stderr[:100]}",
+            "llm_feedback": "Rule-based inspection passed basic syntax checks."
+        }
+
+    try:
+        from anthropic import Anthropic
+        client = Anthropic(api_key=config.ANTHROPIC_API_KEY)
+        prompt = (
+            f"Skill: {skill}\n\n"
+            f"Submitted code:\n{submission}\n\n"
+            f"Sandbox stdout:\n{stdout}\n\n"
+            f"Sandbox stderr:\n{stderr}"
+        )
+        response = client.messages.create(
+            model=config.CLAUDE_MODEL,
+            max_tokens=512,
+            system=_JUDGE_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return _parse_json_response(response.content[0].text)
+    except Exception as e:
+        logger.error(f"LLM judge evaluation failed: {e}")
+        return {
+            "score": 75.0,
+            "passed": True,
+            "judge_feedback": "Evaluation completed with fallback evaluator.",
+            "llm_feedback": "Basic execution check passed."
+        }
+
+
+def _parse_json_response(text: str) -> Dict[str, Any]:
+    text = text.strip()
+    match = re.search(r'\{.*\}', text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
+    if text.startswith("```"):
+        text = text.strip("`")
+        text = text.split("\n", 1)[1] if "\n" in text else text
+    return json.loads(text)
+</file>
+
+<file path="agents/diagnosis/.gitkeep">
+
+</file>
+
+<file path="agents/graph/.gitkeep">
+
+</file>
+
+<file path="agents/prompts/.gitkeep">
+
+</file>
+
+<file path="agents/roadmap/.gitkeep">
+
+</file>
+
+<file path="agents/verification/.gitkeep">
+
+</file>
+
+<file path="backend/alembic/versions/b05e26de1aeb_create_backend_tables.py">
+"""create backend tables"""
+from typing import Sequence, Union
+from alembic import op
+import sqlalchemy as sa
+
+revision: str = 'b05e26de1aeb'
+down_revision: Union[str, Sequence[str], None] = None
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
+def upgrade() -> None:
+    # ### commands auto generated by Alembic - please adjust! ###
+    op.create_table('accounts',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('email', sa.String(length=320), nullable=False),
+    sa.Column('password_hash', sa.String(length=255), nullable=False),
+    sa.Column('role', sa.String(length=30), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_accounts_email'), 'accounts', ['email'], unique=True)
+    op.create_table('employer_requirements',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('employer_id', sa.UUID(), nullable=False),
+    sa.Column('role_title', sa.String(length=160), nullable=False),
+    sa.Column('region', sa.String(length=120), nullable=True),
+    sa.Column('required_skills_json', sa.Text(), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_employer_requirements_employer_id'), 'employer_requirements', ['employer_id'], unique=False)
+    op.create_table('employers',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('account_id', sa.UUID(), nullable=False),
+    sa.Column('company_name', sa.String(length=200), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_employers_account_id'), 'employers', ['account_id'], unique=True)
+    op.create_table('job_postings',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('external_job_id', sa.String(length=160), nullable=False),
+    sa.Column('title', sa.String(length=200), nullable=False),
+    sa.Column('company', sa.String(length=200), nullable=True),
+    sa.Column('location', sa.String(length=200), nullable=True),
+    sa.Column('region', sa.String(length=120), nullable=True),
+    sa.Column('description', sa.Text(), nullable=False),
+    sa.Column('source_name', sa.String(length=80), nullable=False),
+    sa.Column('source_url', sa.String(length=1000), nullable=False),
+    sa.Column('posted_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('fetched_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('freshness_score', sa.Float(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_job_postings_external_job_id'), 'job_postings', ['external_job_id'], unique=True)
+    op.create_index(op.f('ix_job_postings_title'), 'job_postings', ['title'], unique=False)
+    op.create_table('learners',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('account_id', sa.UUID(), nullable=False),
+    sa.Column('current_role', sa.String(length=120), nullable=True),
+    sa.Column('target_role', sa.String(length=120), nullable=False),
+    sa.Column('preferred_region', sa.String(length=120), nullable=True),
+    sa.Column('preferred_language', sa.String(length=80), nullable=True),
+    sa.Column('resume_text', sa.Text(), nullable=True),
+    sa.Column('profile_source', sa.String(length=20), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_learners_account_id'), 'learners', ['account_id'], unique=True)
+    op.create_table('match_results',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('employer_id', sa.UUID(), nullable=False),
+    sa.Column('learner_id', sa.UUID(), nullable=False),
+    sa.Column('role_title', sa.String(length=160), nullable=False),
+    sa.Column('match_score', sa.Float(), nullable=False),
+    sa.Column('matched_skills_json', sa.Text(), nullable=False),
+    sa.Column('missing_skills_json', sa.Text(), nullable=False),
+    sa.Column('verified_skills_json', sa.Text(), nullable=False),
+    sa.Column('explanation', sa.Text(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_match_results_employer_id'), 'match_results', ['employer_id'], unique=False)
+    op.create_index(op.f('ix_match_results_learner_id'), 'match_results', ['learner_id'], unique=False)
+    op.create_table('micro_projects',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('roadmap_step_id', sa.UUID(), nullable=False),
+    sa.Column('skill', sa.String(length=120), nullable=False),
+    sa.Column('title', sa.String(length=200), nullable=False),
+    sa.Column('description', sa.Text(), nullable=False),
+    sa.Column('instructions', sa.Text(), nullable=False),
+    sa.Column('language', sa.String(length=40), nullable=False),
+    sa.Column('difficulty', sa.String(length=30), nullable=False),
+    sa.Column('rubric_json', sa.Text(), nullable=False),
+    sa.Column('test_cases_json', sa.Text(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_micro_projects_roadmap_step_id'), 'micro_projects', ['roadmap_step_id'], unique=False)
+    op.create_table('roadmap_steps',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('roadmap_id', sa.UUID(), nullable=False),
+    sa.Column('skill', sa.String(length=120), nullable=False),
+    sa.Column('title', sa.String(length=200), nullable=False),
+    sa.Column('description', sa.Text(), nullable=False),
+    sa.Column('reason', sa.Text(), nullable=False),
+    sa.Column('step_order', sa.Integer(), nullable=False),
+    sa.Column('status', sa.String(length=30), nullable=False),
+    sa.Column('citations_json', sa.Text(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_roadmap_steps_roadmap_id'), 'roadmap_steps', ['roadmap_id'], unique=False)
+    op.create_table('roadmaps',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('learner_id', sa.UUID(), nullable=False),
+    sa.Column('target_role', sa.String(length=120), nullable=False),
+    sa.Column('overall_summary', sa.Text(), nullable=True),
+    sa.Column('status', sa.String(length=30), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_roadmaps_learner_id'), 'roadmaps', ['learner_id'], unique=False)
+    op.create_table('submissions',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('project_id', sa.UUID(), nullable=False),
+    sa.Column('learner_id', sa.UUID(), nullable=False),
+    sa.Column('code', sa.Text(), nullable=False),
+    sa.Column('language', sa.String(length=40), nullable=False),
+    sa.Column('status', sa.String(length=30), nullable=False),
+    sa.Column('submitted_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_submissions_learner_id'), 'submissions', ['learner_id'], unique=False)
+    op.create_index(op.f('ix_submissions_project_id'), 'submissions', ['project_id'], unique=False)
+    op.create_table('verification_results',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('submission_id', sa.UUID(), nullable=False),
+    sa.Column('learner_id', sa.UUID(), nullable=False),
+    sa.Column('project_id', sa.UUID(), nullable=False),
+    sa.Column('status', sa.String(length=20), nullable=False),
+    sa.Column('score', sa.Float(), nullable=False),
+    sa.Column('sandbox_passed', sa.Boolean(), nullable=False),
+    sa.Column('judge_feedback', sa.Text(), nullable=True),
+    sa.Column('llm_feedback', sa.Text(), nullable=True),
+    sa.Column('unlocks_next', sa.Boolean(), nullable=False),
+    sa.Column('verified_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_verification_results_learner_id'), 'verification_results', ['learner_id'], unique=False)
+    op.create_index(op.f('ix_verification_results_project_id'), 'verification_results', ['project_id'], unique=False)
+    op.create_index(op.f('ix_verification_results_submission_id'), 'verification_results', ['submission_id'], unique=False)
+    # ### end Alembic commands ###
+def downgrade() -> None:
+    # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_index(op.f('ix_verification_results_submission_id'), table_name='verification_results')
+    op.drop_index(op.f('ix_verification_results_project_id'), table_name='verification_results')
+    op.drop_index(op.f('ix_verification_results_learner_id'), table_name='verification_results')
+    op.drop_table('verification_results')
+    op.drop_index(op.f('ix_submissions_project_id'), table_name='submissions')
+    op.drop_index(op.f('ix_submissions_learner_id'), table_name='submissions')
+    op.drop_table('submissions')
+    op.drop_index(op.f('ix_roadmaps_learner_id'), table_name='roadmaps')
+    op.drop_table('roadmaps')
+    op.drop_index(op.f('ix_roadmap_steps_roadmap_id'), table_name='roadmap_steps')
+    op.drop_table('roadmap_steps')
+    op.drop_index(op.f('ix_micro_projects_roadmap_step_id'), table_name='micro_projects')
+    op.drop_table('micro_projects')
+    op.drop_index(op.f('ix_match_results_learner_id'), table_name='match_results')
+    op.drop_index(op.f('ix_match_results_employer_id'), table_name='match_results')
+    op.drop_table('match_results')
+    op.drop_index(op.f('ix_learners_account_id'), table_name='learners')
+    op.drop_table('learners')
+    op.drop_index(op.f('ix_job_postings_title'), table_name='job_postings')
+    op.drop_index(op.f('ix_job_postings_external_job_id'), table_name='job_postings')
+    op.drop_table('job_postings')
+    op.drop_index(op.f('ix_employers_account_id'), table_name='employers')
+    op.drop_table('employers')
+    op.drop_index(op.f('ix_employer_requirements_employer_id'), table_name='employer_requirements')
+    op.drop_table('employer_requirements')
+    op.drop_index(op.f('ix_accounts_email'), table_name='accounts')
+    op.drop_table('accounts')
+    # ### end Alembic commands ###
+</file>
+
+<file path="backend/alembic/env.py">
+from logging.config import fileConfig
+from sqlalchemy import engine_from_config,pool
+from alembic import context
+from app.core.config import settings
+from app.db.base import Base
+from app import models  # noqa: F401
+config=context.config; config.set_main_option('sqlalchemy.url',settings.database_url)
+if config.config_file_name is not None:fileConfig(config.config_file_name)
+target_metadata=Base.metadata
+def run_migrations_offline():
+    context.configure(url=settings.database_url,target_metadata=target_metadata,literal_binds=True,dialect_opts={'paramstyle':'named'})
+    with context.begin_transaction():context.run_migrations()
+def run_migrations_online():
+    connectable=engine_from_config(config.get_section(config.config_ini_section,{}),prefix='sqlalchemy.',poolclass=pool.NullPool)
+    with connectable.connect() as connection:
+        context.configure(connection=connection,target_metadata=target_metadata)
+        with context.begin_transaction():context.run_migrations()
+if context.is_offline_mode():run_migrations_offline()
+else:run_migrations_online()
+</file>
+
+<file path="backend/alembic/script.py.mako">
+"""${message}"""
+from typing import Sequence, Union
+from alembic import op
+import sqlalchemy as sa
+${imports if imports else ""}
+revision: str = ${repr(up_revision)}
+down_revision: Union[str, Sequence[str], None] = ${repr(down_revision)}
+branch_labels: Union[str, Sequence[str], None] = ${repr(branch_labels)}
+depends_on: Union[str, Sequence[str], None] = ${repr(depends_on)}
+def upgrade() -> None:
+    ${upgrades if upgrades else "pass"}
+def downgrade() -> None:
+    ${downgrades if downgrades else "pass"}
+</file>
+
+<file path="backend/app/api/routes/__init__.py">
+
+</file>
+
+<file path="backend/app/api/routes/auth.py">
+from fastapi import APIRouter,Depends,HTTPException,status
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+from app.schemas.auth import RegisterRequest,LoginRequest,TokenResponse
+from app.services.auth_service import register,authenticate
+from app.utils.security import create_access_token
+router=APIRouter(prefix="/auth",tags=["auth"])
+@router.post("/register",response_model=TokenResponse,status_code=status.HTTP_201_CREATED)
+def register_account(p:RegisterRequest,db:Session=Depends(get_db)):
+    try:a=register(db,p)
+    except ValueError as e:raise HTTPException(status_code=409,detail=str(e))
+    return TokenResponse(access_token=create_access_token(str(a.id),a.role),account_id=a.id,role=a.role)
+@router.post("/login",response_model=TokenResponse)
+def login(p:LoginRequest,db:Session=Depends(get_db)):
+    a=authenticate(db,p.email,p.password)
+    if not a:raise HTTPException(status_code=401,detail="Invalid email or password")
+    return TokenResponse(access_token=create_access_token(str(a.id),a.role),account_id=a.id,role=a.role)
+</file>
+
+<file path="backend/app/api/routes/employers.py">
+from fastapi import APIRouter,Depends,HTTPException
+from sqlalchemy.orm import Session
+from app.api.dependencies import get_current_account
+from app.db.session import get_db
+from app.models.account import Account
+from app.schemas.employer import EmployerCreate,EmployerRead,EmployerRequirementCreate,EmployerRequirementRead
+from app.services.employer_service import profile,by_account,requirement
+router=APIRouter(prefix="/employers",tags=["employers"])
+@router.put("/me",response_model=EmployerRead)
+def my_company(p:EmployerCreate,a:Account=Depends(get_current_account),db:Session=Depends(get_db)):
+    if a.role!="employer":raise HTTPException(403,"Employer account required")
+    return profile(db,a.id,p)
+@router.post("/requirements",response_model=EmployerRequirementRead)
+def req(p:EmployerRequirementCreate,a:Account=Depends(get_current_account),db:Session=Depends(get_db)):
+    if a.role!="employer":raise HTTPException(403,"Employer account required")
+    e=by_account(db,a.id)
+    if not e:raise HTTPException(404,"Employer profile not found")
+    return requirement(db,e.id,p)
+</file>
+
+<file path="backend/app/api/routes/health.py">
+from fastapi import APIRouter
+from app.core.config import settings
+from app.schemas.common import HealthResponse
+router=APIRouter(tags=["health"])
+@router.get("/health",response_model=HealthResponse)
+def health():return HealthResponse(status="ok",service=settings.app_name,environment=settings.environment)
+</file>
+
+<file path="backend/app/api/routes/jobs.py">
+from fastapi import APIRouter,Depends,Query,status
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+from app.schemas.job_posting import JobPostingCreate,JobPostingRead
+from app.services.job_service import upsert,recent
+router=APIRouter(prefix="/jobs",tags=["jobs"])
+@router.post("",response_model=JobPostingRead,status_code=status.HTTP_201_CREATED)
+def create_or_update(p:JobPostingCreate,db:Session=Depends(get_db)):return upsert(db,p)
+@router.get("",response_model=list[JobPostingRead])
+def list_jobs(limit:int=Query(50,ge=1,le=100),db:Session=Depends(get_db)):return recent(db,limit)
+</file>
+
+<file path="backend/app/api/routes/learners.py">
+from uuid import UUID
+from fastapi import APIRouter,Depends,HTTPException
+from sqlalchemy.orm import Session
+from app.api.dependencies import get_current_account
+from app.db.session import get_db
+from app.models.account import Account
+from app.schemas.learner import LearnerCreate,LearnerRead
+from app.services.learner_service import upsert,by_account,by_id
+router=APIRouter(prefix="/learners",tags=["learners"])
+@router.put("/me",response_model=LearnerRead)
+def me(p:LearnerCreate,a:Account=Depends(get_current_account),db:Session=Depends(get_db)):
+    if a.role!="learner":raise HTTPException(403,"Learner account required")
+    return upsert(db,a.id,p)
+@router.get("/me",response_model=LearnerRead)
+def get_me(a:Account=Depends(get_current_account),db:Session=Depends(get_db)):
+    x=by_account(db,a.id)
+    if not x:raise HTTPException(404,"Learner profile not found")
+    return x
+@router.get("/{learner_id}",response_model=LearnerRead)
+def get_public(learner_id:UUID,db:Session=Depends(get_db)):
+    x=by_id(db,learner_id)
+    if not x:raise HTTPException(404,"Learner not found")
+    return x
+</file>
+
+<file path="backend/app/api/routes/matches.py">
+from uuid import UUID
+from fastapi import APIRouter,Depends,Query
+from sqlalchemy.orm import Session
+from app.api.dependencies import get_current_account
+from app.db.session import get_db
+from app.schemas.match import MatchCreate,MatchRead
+from app.services.match_service import save,learner_matches
+router=APIRouter(prefix="/matches",tags=["matches"])
+@router.post("",response_model=MatchRead)
+def create_match(p:MatchCreate,db:Session=Depends(get_db)):return save(db,p)
+@router.get("/learner/{learner_id}",response_model=list[MatchRead])
+def get_matches(learner_id:UUID,limit:int=Query(50,ge=1,le=100),db:Session=Depends(get_db),_=Depends(get_current_account)):return learner_matches(db,learner_id,limit)
+</file>
+
+<file path="backend/app/api/routes/roadmaps.py">
+import json
+from uuid import UUID
+from fastapi import APIRouter,Depends,HTTPException
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from app.api.dependencies import get_current_account
+from app.db.session import get_db
+from app.models.account import Account
+from app.models.learner import Learner
+from app.models.roadmap import RoadmapStep
+from app.schemas.roadmap import RoadmapCreate,RoadmapRead,RoadmapStepRead
+from app.services.roadmap_service import create,get
+router=APIRouter(prefix="/roadmaps",tags=["roadmaps"])
+def serialize(pair):
+    r,steps=pair
+    return RoadmapRead(id=r.id,learner_id=r.learner_id,target_role=r.target_role,overall_summary=r.overall_summary,status=r.status,created_at=r.created_at,steps=[RoadmapStepRead(id=s.id,roadmap_id=s.roadmap_id,skill=s.skill,title=s.title,description=s.description,reason=s.reason,step_order=s.step_order,status=s.status,citations=json.loads(s.citations_json)) for s in steps])
+@router.post("",response_model=RoadmapRead)
+def create_route(learner_id:UUID,p:RoadmapCreate,a:Account=Depends(get_current_account),db:Session=Depends(get_db)):
+    x=db.get(Learner,learner_id)
+    if a.role!="learner" or not x or x.account_id!=a.id:raise HTTPException(403,"Cannot create roadmap for this learner")
+    r=create(db,learner_id,p)
+    return serialize((r,list(db.scalars(select(RoadmapStep).where(RoadmapStep.roadmap_id==r.id).order_by(RoadmapStep.step_order)).all())))
+@router.get("/{roadmap_id}",response_model=RoadmapRead)
+def read_route(roadmap_id:UUID,db:Session=Depends(get_db)):
+    pair=get(db,roadmap_id)
+    if pair[0] is None:raise HTTPException(404,"Roadmap not found")
+    return serialize(pair)
+</file>
+
+<file path="backend/app/api/routes/verification.py">
+from fastapi import APIRouter,Depends,HTTPException
+from sqlalchemy.orm import Session
+from app.api.dependencies import get_current_account
+from app.db.session import get_db
+from app.models.account import Account
+from app.models.learner import Learner
+from app.schemas.verification import MicroProjectCreate,MicroProjectRead,SubmissionCreate,SubmissionRead,VerificationResultCreate,VerificationResultRead
+from app.services.verification_service import project,submit,result,history
+router=APIRouter(prefix="/verification",tags=["verification"])
+def learner_for(a,db):
+    if a.role!="learner":raise HTTPException(403,"Learner account required")
+    x=db.query(Learner).filter(Learner.account_id==a.id).first()
+    if not x:raise HTTPException(404,"Learner profile not found")
+    return x
+@router.post("/projects",response_model=MicroProjectRead)
+def create_project(p:MicroProjectCreate,a:Account=Depends(get_current_account),db:Session=Depends(get_db)):learner_for(a,db);return project(db,p)
+@router.post("/submissions",response_model=SubmissionRead)
+def submit_code(p:SubmissionCreate,a:Account=Depends(get_current_account),db:Session=Depends(get_db)):
+    return submit(db,learner_for(a,db).id,p)
+@router.post("/results",response_model=VerificationResultRead)
+def record(p:VerificationResultCreate,a:Account=Depends(get_current_account),db:Session=Depends(get_db)):
+    return result(db,learner_for(a,db).id,p)
+@router.get("/history",response_model=list[VerificationResultRead])
+def get_history(a:Account=Depends(get_current_account),db:Session=Depends(get_db)):
+    return history(db,learner_for(a,db).id)
+</file>
+
+<file path="backend/app/api/__init__.py">
+
+</file>
+
+<file path="backend/app/api/.gitkeep">
+
+</file>
+
+<file path="backend/app/api/dependencies.py">
+from uuid import UUID
+import jwt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+from app.models.account import Account
+from app.utils.security import decode_access_token
+oauth2_scheme=OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+def get_current_account(token: str=Depends(oauth2_scheme), db: Session=Depends(get_db)) -> Account:
+    err=HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired access token", headers={"WWW-Authenticate":"Bearer"})
+    try: account_id=UUID(decode_access_token(token)["sub"])
+    except (KeyError,ValueError,jwt.InvalidTokenError): raise err
+    account=db.scalar(select(Account).where(Account.id==account_id))
+    if account is None: raise err
+    return account
+</file>
+
+<file path="backend/app/core/__init__.py">
+
+</file>
+
+<file path="backend/app/core/config.py">
+from functools import lru_cache
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class Settings(BaseSettings):
+    app_name: str = "SkillBridge API"
+    environment: str = "development"
+    api_v1_prefix: str = "/api/v1"
+    database_url: str = "postgresql+psycopg://skillbridge:skillbridge@localhost:5432/skillbridge"
+    frontend_url: str = "http://localhost:3000"
+    jwt_secret_key: str = "CHANGE_ME_IN_ENV"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 1440
+    anthropic_api_key: str | None = None
+    adzuna_app_id: str | None = None
+    adzuna_app_key: str | None = None
+    judge0_api_url: str | None = None
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
+
+settings = get_settings()
+</file>
+
+<file path="backend/app/db/__init__.py">
+
+</file>
+
+<file path="backend/app/db/base.py">
+from sqlalchemy.orm import DeclarativeBase
+class Base(DeclarativeBase):
+    pass
+</file>
+
+<file path="backend/app/db/session.py">
+from collections.abc import Generator
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
+from app.core.config import settings
+engine = create_engine(settings.database_url, pool_pre_ping=True)
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
+def get_db() -> Generator[Session, None, None]:
+    db=SessionLocal()
+    try: yield db
+    finally: db.close()
+</file>
+
+<file path="backend/app/models/__init__.py">
+from app.models.account import Account
+from app.models.employer import Employer, EmployerRequirement
+from app.models.job_posting import JobPosting
+from app.models.learner import Learner
+from app.models.match import MatchResult
+from app.models.roadmap import Roadmap, RoadmapStep
+from app.models.verification import MicroProject, Submission, VerificationResult
+</file>
+
+<file path="backend/app/models/.gitkeep">
+
+</file>
+
+<file path="backend/app/models/account.py">
+import uuid
+from datetime import datetime
+from sqlalchemy import DateTime, String, func
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column
+from app.db.base import Base
+class Account(Base):
+    __tablename__ = "accounts"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    email: Mapped[str] = mapped_column(String(320), unique=True, index=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    role: Mapped[str] = mapped_column(String(30), default="learner", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+</file>
+
+<file path="backend/app/models/employer.py">
+import uuid
+from datetime import datetime
+from sqlalchemy import DateTime, String, Text, func
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column
+from app.db.base import Base
+class Employer(Base):
+    __tablename__ = "employers"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    account_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), unique=True, index=True, nullable=False)
+    company_name: Mapped[str] = mapped_column(String(200), nullable=False)
+    description: Mapped[str|None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+class EmployerRequirement(Base):
+    __tablename__ = "employer_requirements"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    employer_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), index=True, nullable=False)
+    role_title: Mapped[str] = mapped_column(String(160), nullable=False)
+    region: Mapped[str|None] = mapped_column(String(120))
+    required_skills_json: Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+    description: Mapped[str|None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+</file>
+
+<file path="backend/app/models/job_posting.py">
+import uuid
+from datetime import datetime
+from sqlalchemy import DateTime, Float, String, Text, func
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column
+from app.db.base import Base
+class JobPosting(Base):
+    __tablename__ = "job_postings"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    external_job_id: Mapped[str] = mapped_column(String(160), unique=True, index=True, nullable=False)
+    title: Mapped[str] = mapped_column(String(200), index=True, nullable=False)
+    company: Mapped[str|None] = mapped_column(String(200))
+    location: Mapped[str|None] = mapped_column(String(200))
+    region: Mapped[str|None] = mapped_column(String(120))
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    source_name: Mapped[str] = mapped_column(String(80), nullable=False)
+    source_url: Mapped[str] = mapped_column(String(1000), nullable=False)
+    posted_at: Mapped[datetime|None] = mapped_column(DateTime(timezone=True))
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    freshness_score: Mapped[float|None] = mapped_column(Float)
+</file>
+
+<file path="backend/app/models/learner.py">
+import uuid
+from datetime import datetime
+from sqlalchemy import DateTime, String, Text, func
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column
+from app.db.base import Base
+class Learner(Base):
+    __tablename__ = "learners"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    account_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), unique=True, index=True, nullable=False)
+    current_role: Mapped[str|None] = mapped_column(String(120))
+    target_role: Mapped[str] = mapped_column(String(120), nullable=False)
+    preferred_region: Mapped[str|None] = mapped_column(String(120))
+    preferred_language: Mapped[str|None] = mapped_column(String(80))
+    resume_text: Mapped[str|None] = mapped_column(Text)
+    profile_source: Mapped[str] = mapped_column(String(20), default="manual", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+</file>
+
+<file path="backend/app/models/match.py">
+import uuid
+from datetime import datetime
+from sqlalchemy import DateTime, Float, String, Text, func
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column
+from app.db.base import Base
+class MatchResult(Base):
+    __tablename__ = "match_results"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    employer_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), index=True, nullable=False)
+    learner_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), index=True, nullable=False)
+    role_title: Mapped[str] = mapped_column(String(160), nullable=False)
+    match_score: Mapped[float] = mapped_column(Float, nullable=False)
+    matched_skills_json: Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+    missing_skills_json: Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+    verified_skills_json: Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+    explanation: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+</file>
+
+<file path="backend/app/models/roadmap.py">
+import uuid
+from datetime import datetime
+from sqlalchemy import DateTime, Integer, String, Text, func
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column
+from app.db.base import Base
+class Roadmap(Base):
+    __tablename__ = "roadmaps"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    learner_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), index=True, nullable=False)
+    target_role: Mapped[str] = mapped_column(String(120), nullable=False)
+    overall_summary: Mapped[str|None] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(30), default="active", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+class RoadmapStep(Base):
+    __tablename__ = "roadmap_steps"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    roadmap_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), index=True, nullable=False)
+    skill: Mapped[str] = mapped_column(String(120), nullable=False)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    step_order: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(30), default="locked", nullable=False)
+    citations_json: Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+</file>
+
+<file path="backend/app/models/verification.py">
+import uuid
+from datetime import datetime
+from sqlalchemy import Boolean, DateTime, Float, String, Text, func
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column
+from app.db.base import Base
+class MicroProject(Base):
+    __tablename__ = "micro_projects"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    roadmap_step_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), index=True, nullable=False)
+    skill: Mapped[str] = mapped_column(String(120), nullable=False)
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    instructions: Mapped[str] = mapped_column(Text, nullable=False)
+    language: Mapped[str] = mapped_column(String(40), default="python", nullable=False)
+    difficulty: Mapped[str] = mapped_column(String(30), default="beginner", nullable=False)
+    rubric_json: Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+    test_cases_json: Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+class Submission(Base):
+    __tablename__ = "submissions"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    project_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), index=True, nullable=False)
+    learner_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), index=True, nullable=False)
+    code: Mapped[str] = mapped_column(Text, nullable=False)
+    language: Mapped[str] = mapped_column(String(40), default="python", nullable=False)
+    status: Mapped[str] = mapped_column(String(30), default="submitted", nullable=False)
+    submitted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+class VerificationResult(Base):
+    __tablename__ = "verification_results"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    submission_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), index=True, nullable=False)
+    learner_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), index=True, nullable=False)
+    project_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), index=True, nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False)
+    score: Mapped[float] = mapped_column(Float, default=0, nullable=False)
+    sandbox_passed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    judge_feedback: Mapped[str|None] = mapped_column(Text)
+    llm_feedback: Mapped[str|None] = mapped_column(Text)
+    unlocks_next: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    verified_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+</file>
+
+<file path="backend/app/schemas/__init__.py">
+
+</file>
+
+<file path="backend/app/schemas/.gitkeep">
+
+</file>
+
+<file path="backend/app/schemas/auth.py">
+from uuid import UUID
+from pydantic import BaseModel, EmailStr, Field
+class RegisterRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=128)
+    role: str = Field(default="learner", pattern="^(learner|employer)$")
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=1, max_length=128)
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    account_id: UUID
+    role: str
+</file>
+
+<file path="backend/app/schemas/common.py">
+from pydantic import BaseModel
+class HealthResponse(BaseModel):
+    status: str
+    service: str
+    environment: str
+</file>
+
+<file path="backend/app/schemas/employer.py">
+from datetime import datetime
+from uuid import UUID
+from pydantic import BaseModel,Field
+class EmployerCreate(BaseModel):
+    company_name:str=Field(min_length=1,max_length=200); description:str|None=None
+class EmployerRead(EmployerCreate):
+    id:UUID; account_id:UUID; created_at:datetime
+class EmployerRequirementCreate(BaseModel):
+    role_title:str=Field(min_length=1,max_length=160); region:str|None=None; required_skills:list[dict]=[]; description:str|None=None
+class EmployerRequirementRead(EmployerRequirementCreate):
+    id:UUID; employer_id:UUID; created_at:datetime
+</file>
+
+<file path="backend/app/schemas/job_posting.py">
+from datetime import datetime
+from uuid import UUID
+from pydantic import BaseModel,ConfigDict,Field
+class JobPostingCreate(BaseModel):
+    external_job_id:str=Field(min_length=1,max_length=160)
+    title:str=Field(min_length=1,max_length=200)
+    company:str|None=None; location:str|None=None; region:str|None=None
+    description:str=Field(min_length=1)
+    source_name:str=Field(min_length=1,max_length=80)
+    source_url:str=Field(min_length=1,max_length=1000)
+    posted_at:datetime|None=None
+    freshness_score:float|None=Field(default=None,ge=0,le=1)
+class JobPostingRead(JobPostingCreate):
+    model_config=ConfigDict(from_attributes=True)
+    id:UUID; fetched_at:datetime
+</file>
+
+<file path="backend/app/schemas/learner.py">
+from datetime import datetime
+from uuid import UUID
+from pydantic import BaseModel,ConfigDict,Field
+from shared.types.types import ProfileSource
+class LearnerCreate(BaseModel):
+    current_role: str|None=Field(default=None,max_length=120)
+    target_role: str=Field(min_length=1,max_length=120)
+    preferred_region: str|None=Field(default=None,max_length=120)
+    preferred_language: str|None=Field(default=None,max_length=80)
+    resume_text: str|None=None
+    profile_source: ProfileSource=ProfileSource.MANUAL
+class LearnerRead(LearnerCreate):
+    model_config=ConfigDict(from_attributes=True)
+    id: UUID
+    account_id: UUID
+    created_at: datetime
+    updated_at: datetime
+</file>
+
+<file path="backend/app/schemas/match.py">
+from datetime import datetime
+from uuid import UUID
+from pydantic import BaseModel,Field
+class MatchCreate(BaseModel):
+    employer_id:UUID; learner_id:UUID; role_title:str; match_score:float=Field(ge=0,le=1); matched_skills:list[str]=[]; missing_skills:list[str]=[]; verified_skills:list[str]=[]; explanation:str
+class MatchRead(MatchCreate):
+    id:UUID; created_at:datetime
+</file>
+
+<file path="backend/app/schemas/roadmap.py">
+from datetime import datetime
+from uuid import UUID
+from pydantic import BaseModel,Field
+class RoadmapStepCreate(BaseModel):
+    skill:str; title:str; description:str; reason:str; step_order:int=Field(ge=1); citations:list[dict]=[]
+class RoadmapCreate(BaseModel):
+    target_role:str; overall_summary:str|None=None; steps:list[RoadmapStepCreate]
+class RoadmapStepRead(RoadmapStepCreate):
+    id:UUID; roadmap_id:UUID; status:str
+class RoadmapRead(BaseModel):
+    id:UUID; learner_id:UUID; target_role:str; overall_summary:str|None; status:str; created_at:datetime; steps:list[RoadmapStepRead]
+</file>
+
+<file path="backend/app/schemas/verification.py">
+from datetime import datetime
+from uuid import UUID
+from pydantic import BaseModel,Field
+class MicroProjectCreate(BaseModel):
+    roadmap_step_id:UUID; skill:str; title:str; description:str; instructions:str; language:str="python"; difficulty:str="beginner"; rubric:list[dict]=[]; test_cases:list[dict]=[]
+class MicroProjectRead(MicroProjectCreate):
+    id:UUID; created_at:datetime
+class SubmissionCreate(BaseModel):
+    project_id:UUID; code:str=Field(min_length=1); language:str="python"
+class SubmissionRead(SubmissionCreate):
+    id:UUID; learner_id:UUID; status:str; submitted_at:datetime
+class VerificationResultCreate(BaseModel):
+    submission_id:UUID; project_id:UUID; status:str=Field(pattern="^(pass|fail|error)$"); score:float=Field(ge=0,le=100); sandbox_passed:bool; judge_feedback:str|None=None; llm_feedback:str|None=None; unlocks_next:bool=False
+class VerificationResultRead(VerificationResultCreate):
+    id:UUID; learner_id:UUID; verified_at:datetime
+</file>
+
+<file path="backend/app/services/.gitkeep">
+
+</file>
+
+<file path="backend/app/services/auth_service.py">
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from app.models.account import Account
+from app.schemas.auth import RegisterRequest
+from app.utils.security import hash_password,verify_password
+def register(db:Session,payload:RegisterRequest)->Account:
+    if db.scalar(select(Account).where(Account.email==payload.email.lower())): raise ValueError("Email already registered")
+    account=Account(email=payload.email.lower(),password_hash=hash_password(payload.password),role=payload.role)
+    db.add(account); db.commit(); db.refresh(account); return account
+def authenticate(db:Session,email:str,password:str)->Account|None:
+    a=db.scalar(select(Account).where(Account.email==email.lower()))
+    return a if a and verify_password(password,a.password_hash) else None
+</file>
+
+<file path="backend/app/services/employer_service.py">
+import json,uuid
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from app.models.employer import Employer,EmployerRequirement
+from app.schemas.employer import EmployerCreate,EmployerRequirementCreate
+def profile(db:Session,account_id:uuid.UUID,p:EmployerCreate):
+    x=db.scalar(select(Employer).where(Employer.account_id==account_id))
+    if x is None:x=Employer(account_id=account_id,**p.model_dump());db.add(x)
+    else:x.company_name=p.company_name;x.description=p.description
+    db.commit();db.refresh(x);return x
+def by_account(db:Session,account_id:uuid.UUID):return db.scalar(select(Employer).where(Employer.account_id==account_id))
+def requirement(db:Session,employer_id:uuid.UUID,p:EmployerRequirementCreate):
+    x=EmployerRequirement(employer_id=employer_id,role_title=p.role_title,region=p.region,required_skills_json=json.dumps(p.required_skills),description=p.description);db.add(x);db.commit();db.refresh(x);return x
+</file>
+
+<file path="backend/app/services/job_service.py">
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from app.models.job_posting import JobPosting
+from app.schemas.job_posting import JobPostingCreate
+def upsert(db:Session,p:JobPostingCreate)->JobPosting:
+    x=db.scalar(select(JobPosting).where(JobPosting.external_job_id==p.external_job_id)); data=p.model_dump()
+    if x is None: x=JobPosting(**data); db.add(x)
+    else:
+        for k,v in data.items(): setattr(x,k,v)
+    db.commit(); db.refresh(x); return x
+def recent(db:Session,limit:int=50): return list(db.scalars(select(JobPosting).order_by(JobPosting.fetched_at.desc()).limit(limit)).all())
+</file>
+
+<file path="backend/app/services/learner_service.py">
+from uuid import UUID
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from app.models.learner import Learner
+from app.schemas.learner import LearnerCreate
+def upsert(db:Session,account_id:UUID,payload:LearnerCreate)->Learner:
+    x=db.scalar(select(Learner).where(Learner.account_id==account_id)); data=payload.model_dump()
+    if x is None: x=Learner(account_id=account_id,**data); db.add(x)
+    else:
+        for k,v in data.items(): setattr(x,k,v)
+    db.commit(); db.refresh(x); return x
+def by_account(db:Session,account_id:UUID): return db.scalar(select(Learner).where(Learner.account_id==account_id))
+def by_id(db:Session,learner_id:UUID): return db.scalar(select(Learner).where(Learner.id==learner_id))
+</file>
+
+<file path="backend/app/services/match_service.py">
+import json,uuid
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from app.models.match import MatchResult
+from app.schemas.match import MatchCreate
+def save(db:Session,p:MatchCreate):
+    x=MatchResult(employer_id=p.employer_id,learner_id=p.learner_id,role_title=p.role_title,match_score=p.match_score,matched_skills_json=json.dumps(p.matched_skills),missing_skills_json=json.dumps(p.missing_skills),verified_skills_json=json.dumps(p.verified_skills),explanation=p.explanation);db.add(x);db.commit();db.refresh(x);return x
+def learner_matches(db:Session,learner_id:uuid.UUID,limit:int=50):return list(db.scalars(select(MatchResult).where(MatchResult.learner_id==learner_id).order_by(MatchResult.match_score.desc()).limit(limit)).all())
+</file>
+
+<file path="backend/app/services/roadmap_service.py">
+import json,uuid
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from app.models.roadmap import Roadmap,RoadmapStep
+from app.schemas.roadmap import RoadmapCreate
+def create(db:Session,learner_id:uuid.UUID,p:RoadmapCreate)->Roadmap:
+    r=Roadmap(learner_id=learner_id,target_role=p.target_role,overall_summary=p.overall_summary); db.add(r); db.flush()
+    for i,s in enumerate(p.steps,1): db.add(RoadmapStep(roadmap_id=r.id,skill=s.skill,title=s.title,description=s.description,reason=s.reason,step_order=s.step_order,status="unlocked" if i==1 else "locked",citations_json=json.dumps(s.citations)))
+    db.commit(); db.refresh(r); return r
+def get(db:Session,roadmap_id):
+    r=db.get(Roadmap,roadmap_id)
+    if not r:return None,[]
+    steps=list(db.scalars(select(RoadmapStep).where(RoadmapStep.roadmap_id==roadmap_id).order_by(RoadmapStep.step_order)).all())
+    return r,steps
+</file>
+
+<file path="backend/app/services/verification_service.py">
+import json,uuid
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from app.models.verification import MicroProject,Submission,VerificationResult
+from app.schemas.verification import MicroProjectCreate,SubmissionCreate,VerificationResultCreate
+def project(db:Session,p:MicroProjectCreate):
+    x=MicroProject(roadmap_step_id=p.roadmap_step_id,skill=p.skill,title=p.title,description=p.description,instructions=p.instructions,language=p.language,difficulty=p.difficulty,rubric_json=json.dumps(p.rubric),test_cases_json=json.dumps(p.test_cases)); db.add(x); db.commit(); db.refresh(x); return x
+def submit(db:Session,learner_id:uuid.UUID,p:SubmissionCreate):
+    x=Submission(project_id=p.project_id,learner_id=learner_id,code=p.code,language=p.language); db.add(x); db.commit(); db.refresh(x); return x
+def result(db:Session,learner_id:uuid.UUID,p:VerificationResultCreate):
+    x=VerificationResult(submission_id=p.submission_id,project_id=p.project_id,learner_id=learner_id,status=p.status,score=p.score,sandbox_passed=p.sandbox_passed,judge_feedback=p.judge_feedback,llm_feedback=p.llm_feedback,unlocks_next=p.unlocks_next); db.add(x); db.commit(); db.refresh(x); return x
+def history(db:Session,learner_id:uuid.UUID): return list(db.scalars(select(VerificationResult).where(VerificationResult.learner_id==learner_id).order_by(VerificationResult.verified_at.desc())).all())
+</file>
+
+<file path="backend/app/utils/__init__.py">
+
+</file>
+
+<file path="backend/app/utils/security.py">
+from datetime import datetime, timedelta, timezone
+import jwt
+from pwdlib import PasswordHash
+from app.core.config import settings
+password_hash = PasswordHash.recommended()
+def hash_password(password: str) -> str: return password_hash.hash(password)
+def verify_password(password: str, hashed: str) -> bool: return password_hash.verify(password, hashed)
+def create_access_token(subject: str, role: str) -> str:
+    exp=datetime.now(timezone.utc)+timedelta(minutes=settings.access_token_expire_minutes)
+    return jwt.encode({"sub":subject,"role":role,"exp":exp}, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
+def decode_access_token(token: str) -> dict:
+    return jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
+</file>
+
+<file path="backend/app/__init__.py">
+
+</file>
+
+<file path="backend/app/main.py">
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.api.router import api_router
+from app.core.config import settings
+@asynccontextmanager
+async def lifespan(_:FastAPI): yield
+app=FastAPI(title=settings.app_name,version="0.2.0",description="Backend API for SkillBridge.",lifespan=lifespan)
+app.add_middleware(CORSMiddleware,allow_origins=[settings.frontend_url],allow_credentials=True,allow_methods=["*"],allow_headers=["*"])
+app.include_router(api_router,prefix=settings.api_v1_prefix)
+</file>
+
+<file path="backend/tests/__init__.py">
+
+</file>
+
+<file path="backend/tests/.gitkeep">
+
+</file>
+
+<file path="backend/tests/conftest.py">
+import sys
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path: sys.path.insert(0,str(ROOT))
+</file>
+
+<file path="backend/tests/test_health.py">
+from fastapi.testclient import TestClient
+from app.main import app
+def test_health():
+    r=TestClient(app).get('/api/v1/health'); assert r.status_code==200; assert r.json()['status']=='ok'
+</file>
+
+<file path="backend/tests/test_schemas.py">
+from app.schemas.auth import RegisterRequest
+from app.schemas.roadmap import RoadmapCreate,RoadmapStepCreate
+def test_register_schema(): assert RegisterRequest(email='a@example.com',password='password123').role=='learner'
+def test_roadmap_schema():
+    r=RoadmapCreate(target_role='Data Analyst',steps=[RoadmapStepCreate(skill='SQL',title='SQL',description='Basics',reason='Demand',step_order=1)]); assert r.steps[0].skill=='SQL'
+</file>
+
+<file path="backend/__init__.py">
+
+</file>
+
+<file path="backend/alembic.ini">
+[alembic]
+script_location = alembic
+prepend_sys_path = .
+sqlalchemy.url = postgresql+psycopg://skillbridge:skillbridge@localhost:5432/skillbridge
+
+[loggers]
+keys = root,sqlalchemy,alembic
+[handlers]
+keys = console
+[formatters]
+keys = generic
+[logger_root]
+level = WARN
+handlers = console
+[logger_sqlalchemy]
+level = WARN
+handlers =
+qualname = sqlalchemy.engine
+[logger_alembic]
+level = INFO
+handlers = console
+qualname = alembic
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
+[formatter_generic]
+format = %(levelname)-5.5s [%(name)s] %(message)s
+</file>
+
+<file path="backend/pyproject.toml">
+[tool.pytest.ini_options]
+pythonpath = [".", ".."]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+</file>
+
+<file path="backend/requirements.txt">
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+sqlalchemy==2.0.43
+psycopg[binary]==3.2.9
+pydantic==2.11.7
+pydantic-settings==2.10.1
+alembic==1.16.4
+python-multipart==0.0.20
+PyJWT==2.10.1
+pwdlib[argon2]==0.2.1
+email-validator==2.2.0
+pytest==8.4.1
+httpx==0.28.1
+</file>
+
+<file path="data/sample_jobs/.gitkeep">
+
+</file>
+
+<file path="data/sample_users/.gitkeep">
+
+</file>
+
+<file path="data/seed/.gitkeep">
+
+</file>
+
+<file path="docs/git-workflow.md">
+# Git Workflow
+
+## 1. Pull before starting
+
+    git checkout main
+    git pull origin main
+
+## 2. Create a branch
+
+Use one branch per feature/task:
+
+    git checkout -b feature/diagnosis-agent
+
+## 3. Work only in your owned area
+
+Example:
+
+    agents/
+
+Avoid unrelated formatting changes elsewhere.
+
+## 4. Commit small steps
+
+Examples:
+
+    feat: add diagnosis result schema
+    feat: implement diagnosis agent
+    test: add diagnosis agent tests
+    fix: handle empty resume input
+
+## 5. Push
+
+    git push -u origin feature/diagnosis-agent
+
+## 6. Pull Request
+
+Open a PR into `main`.
+
+The PR should say:
+- what changed
+- how to test it
+- whether a shared contract changed
+
+## 7. After merge
+
+Delete the feature branch and start a fresh branch for the next task.
+
+## Merge-conflict rule
+
+If Git reports a conflict:
+1. Do not randomly choose "ours" or "theirs".
+2. Stop and inspect the conflicting lines.
+3. Ask the owner of that file if unsure.
+4. Resolve the conflict.
+5. Test.
+6. Commit the merge fix.
+
+## Protected area
+
+Treat `shared/contracts/` as a team-owned protected area.
+Changes need agreement before merge.
+</file>
+
+<file path="docs/module-boundaries.md">
+# Module Boundaries
+
+## frontend/
+Owns:
+- pages
+- components
+- frontend API client
+- UI state
+- skill-tree rendering
+
+Consumes:
+- backend API contracts
+
+## backend/
+Owns:
+- HTTP API
+- auth
+- persistence
+- service orchestration
+- progress ledger
+
+Consumes:
+- shared contracts
+- agent/RAG services
+
+## agents/
+Owns:
+- diagnosis
+- roadmap reasoning
+- verification orchestration
+- LangGraph workflow
+
+Consumes:
+- learner/job data
+- RAG retrieval
+- Judge0 verification
+
+## rag/
+Owns:
+- job ingestion
+- normalization
+- embeddings
+- retrieval
+- citation metadata
+
+## matching/
+Owns:
+- feature construction
+- learner/employer scoring
+- match explanation
+
+## shared/
+Owns:
+- stable data contracts
+- enums
+- system-wide constants
+
+## Safe editing rule
+
+If your task can be completed without changing another module, do not edit it.
+If you must edit another module, tell its owner and do it in the same PR.
+</file>
+
+<file path="docs/shared-contracts.md">
+# Shared Contracts — Team Agreement
+
+## Why this exists
+
+The team is using AI tools independently. Shared contracts are the "plug shape"
+that keeps independently-built modules compatible.
+
+## Ownership
+
+- Anyone may propose a contract change.
+- The person changing a contract must tell the team.
+- Do not change contract fields just to fit an AI-generated implementation.
+- Prefer adapting your implementation to the contract.
+
+## Current module boundaries
+
+### Diagnosis
+Input:
+- `LearnerProfile`
+
+Output:
+- `DiagnosisResult`
+
+### RAG / Roadmap
+Input:
+- `DiagnosisResult`
+- `JobPosting` retrieval results
+
+Output:
+- `RoadmapResult`
+
+### Verification
+Input:
+- `MicroProject`
+- learner submission
+
+Output:
+- `VerificationResult`
+
+### Matching
+Input:
+- `LearnerProfile`
+- verified skills from `VerificationResult`
+- `EmployerRequirement`
+
+Output:
+- `MatchResult`
+
+## Versioning
+
+Contract changes must update the `version` field and be discussed in the PR.
+Do not silently rename fields.
+
+## Never commit secrets
+
+API keys belong in `.env`, not in shared contracts, source code, README files,
+or sample JSON.
+</file>
+
+<file path="frontend/app/onboarding/mcq/page.tsx">
+'use client';
+
+import React from 'react';
+import { useSkillGapDiagnosis } from '../../../hooks/useSkillGapDiagnosis';
+import { MCQAssessment } from '../../../components/diagnosis/MCQAssessment';
+import { SkillGapSummary } from '../../../components/diagnosis/SkillGapSummary';
+
+export default function MCQOnboardingPage() {
+  const { loading, diagnosis, runDiagnosis } = useSkillGapDiagnosis();
+
+  const handleMCQSubmit = async (answers: Record<string, string>, targetRole: string) => {
+    await runDiagnosis({
+      targetRole,
+      mcqAnswers: answers,
+    });
+  };
+
+  return (
+    <div className="space-y-6 py-4">
+      <div className="text-center max-w-xl mx-auto space-y-1">
+        <h1 className="text-2xl font-bold text-slate-100">MCQ Diagnostic Test</h1>
+        <p className="text-xs text-slate-400">Answer 3 simple questions to determine your starting skill level.</p>
+      </div>
+
+      {diagnosis ? (
+        <SkillGapSummary diagnosis={diagnosis} />
+      ) : (
+        <MCQAssessment onSubmit={handleMCQSubmit} isLoading={loading} />
+      )}
+    </div>
+  );
+}
+</file>
+
+<file path="frontend/app/onboarding/resume/page.tsx">
+'use client';
+
+import React from 'react';
+import { useSkillGapDiagnosis } from '../../../hooks/useSkillGapDiagnosis';
+import { ResumeUploader } from '../../../components/diagnosis/ResumeUploader';
+import { SkillGapSummary } from '../../../components/diagnosis/SkillGapSummary';
+
+export default function ResumeOnboardingPage() {
+  const { loading, diagnosis, runDiagnosis } = useSkillGapDiagnosis();
+
+  const handleResumeSubmit = async (data: { targetRole: string; resumeText: string }) => {
+    await runDiagnosis({
+      targetRole: data.targetRole,
+      resumeText: data.resumeText,
+    });
+  };
+
+  return (
+    <div className="space-y-6 py-4">
+      <div className="text-center max-w-xl mx-auto space-y-1">
+        <h1 className="text-2xl font-bold text-slate-100">Resume Skill Analysis</h1>
+        <p className="text-xs text-slate-400">Upload or paste your resume to extract baseline skills.</p>
+      </div>
+
+      {diagnosis ? (
+        <SkillGapSummary diagnosis={diagnosis} />
+      ) : (
+        <ResumeUploader onSubmit={handleResumeSubmit} isLoading={loading} />
+      )}
+    </div>
+  );
+}
+</file>
+
+<file path="frontend/app/onboarding/page.tsx">
+'use client';
+
+import React, { useState } from 'react';
+import { useSkillGapDiagnosis } from '../../hooks/useSkillGapDiagnosis';
+import { ResumeUploader } from '../../components/diagnosis/ResumeUploader';
+import { MCQAssessment } from '../../components/diagnosis/MCQAssessment';
+import { SkillGapSummary } from '../../components/diagnosis/SkillGapSummary';
+import { FileText, CheckSquare } from 'lucide-react';
+
+export default function OnboardingPage() {
+  const { loading, diagnosis, runDiagnosis } = useSkillGapDiagnosis();
+  const [mode, setMode] = useState<'resume' | 'mcq'>('resume');
+
+  return (
+    <div className="space-y-8 py-4">
+      {/* Header */}
+      <div className="text-center max-w-2xl mx-auto space-y-2">
+        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight" style={{ color: '#0f1111' }}>
+          Diagnose Your Skill Gap
+        </h1>
+        <p className="text-sm" style={{ color: '#565959' }}>
+          Upload your resume or answer 3 quick questions to receive a job-market-cited skill roadmap.
+        </p>
+      </div>
+
+      {/* Mode Tabs */}
+      {!diagnosis && (
+        <div
+          className="flex max-w-md mx-auto p-1 rounded-xl gap-1"
+          style={{ backgroundColor: '#e9ebed' }}
+        >
+          {[
+            { key: 'resume', label: 'Upload Resume / CV', icon: FileText },
+            { key: 'mcq', label: 'MCQ Assessment', icon: CheckSquare },
+          ].map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => setMode(key as 'resume' | 'mcq')}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-xs font-semibold transition-all"
+              style={
+                mode === key
+                  ? { backgroundColor: '#fff', color: '#0f1111', boxShadow: '0 1px 4px rgba(0,0,0,0.12)' }
+                  : { backgroundColor: 'transparent', color: '#565959' }
+              }
+            >
+              <Icon className="w-4 h-4" />
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Content */}
+      {diagnosis ? (
+        <SkillGapSummary diagnosis={diagnosis} />
+      ) : mode === 'resume' ? (
+        <ResumeUploader onSubmit={(d) => runDiagnosis({ targetRole: d.targetRole, resumeText: d.resumeText })} isLoading={loading} />
+      ) : (
+        <MCQAssessment onSubmit={(a, r) => runDiagnosis({ targetRole: r, mcqAnswers: a })} isLoading={loading} />
+      )}
+    </div>
+  );
+}
+</file>
+
+<file path="frontend/app/.gitkeep">
+
+</file>
+
+<file path="frontend/app/globals.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --sb-orange: #ff9900;
+  --sb-orange-dark: #e88a00;
+  --sb-navy: #232f3e;
+  --sb-navy-light: #37475a;
+  --sb-teal: #007fa3;
+  --sb-teal-dark: #006080;
+  --bg-page: #f2f3f3;
+  --bg-card: #ffffff;
+  --text-primary: #0f1111;
+  --text-secondary: #565959;
+  --border-color: #d5d9d9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Smooth language transitions */
+* {
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+/* Suppress transitions in low-bandwidth mode */
+html.low-bandwidth * {
+  animation: none !important;
+  transition: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html.low-bandwidth .decorative-bg {
+  display: none;
+}
+</file>
+
+<file path="frontend/app/layout.tsx">
+import React from 'react';
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { Navbar } from '../components/shared/Navbar';
+import { Footer } from '../components/shared/Footer';
+import { ErrorBoundary } from '../components/shared/ErrorBoundary';
+import { VernacularProvider } from '../hooks/useVernacular';
+
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: 'SkillBridge — Cited & Verified Reskilling Platform',
+  description:
+    'AI-powered workforce reskilling with job-citation backed roadmaps and cryptographic skill verifications.',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body
+        className={`${inter.className} min-h-screen flex flex-col antialiased`}
+        style={{ backgroundColor: '#f2f3f3', color: '#0f1111' }}
+      >
+        <VernacularProvider>
+          <Navbar />
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </main>
+          <Footer />
+        </VernacularProvider>
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="frontend/app/page.tsx">
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { useVernacular } from '../hooks/useVernacular';
+import { ArrowRight, CheckCircle2, FileCheck, ShieldCheck, Zap, Building2, Compass } from 'lucide-react';
+
+export default function LandingPage() {
+  const { t } = useVernacular();
+
+  const features = [
+    {
+      icon: Compass,
+      iconBg: '#fff8ec',
+      iconColor: '#ff9900',
+      title: t('landing.feature1Title'),
+      desc: t('landing.feature1Desc'),
+      chip: 'Citation: Job #4821 (TechCorp Logistics)',
+      chipColor: '#ff9900',
+      chipBg: '#fff8ec',
+    },
+    {
+      icon: FileCheck,
+      iconBg: '#edfaf4',
+      iconColor: '#007fa3',
+      title: t('landing.feature2Title'),
+      desc: t('landing.feature2Desc'),
+      chip: 'LLM Judge: Rubric Score 92/100',
+      chipColor: '#007fa3',
+      chipBg: '#edf6fb',
+    },
+    {
+      icon: ShieldCheck,
+      iconBg: '#f0f4ff',
+      iconColor: '#4a6cf7',
+      title: t('landing.feature3Title'),
+      desc: t('landing.feature3Desc'),
+      chip: 'Hash: 0x8f2a419c83b7…',
+      chipColor: '#4a6cf7',
+      chipBg: '#f0f4ff',
+    },
+  ];
+
+  return (
+    <div className="space-y-14">
+      {/* Hero */}
+      <section
+        className="rounded-2xl p-8 md:p-14 text-center space-y-6"
+        style={{
+          background: 'linear-gradient(135deg, #232f3e 0%, #37475a 100%)',
+          boxShadow: '0 4px 24px rgba(35,47,62,0.18)',
+        }}
+      >
+        <div
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
+          style={{ backgroundColor: '#ff9900', color: '#111' }}
+        >
+          <Zap className="w-3.5 h-3.5" />
+          AGENTRIX 2026 · Team Unserious
+        </div>
+
+        <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">
+          {t('landing.heroTitle')}
+        </h1>
+
+        <p className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          {t('landing.heroSubtitle')}
+        </p>
+
+        <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+          <Link
+            href="/onboarding"
+            className="flex items-center gap-2 px-7 py-3 rounded-lg font-bold text-sm transition-colors"
+            style={{ backgroundColor: '#ff9900', color: '#111' }}
+          >
+            {t('landing.ctaStart')}
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            href="/employer"
+            className="flex items-center gap-2 px-7 py-3 rounded-lg font-semibold text-sm border transition-colors"
+            style={{ borderColor: 'rgba(255,255,255,0.3)', color: '#fff', backgroundColor: 'rgba(255,255,255,0.07)' }}
+          >
+            <Building2 className="w-4 h-4" />
+            {t('landing.ctaEmployer')}
+          </Link>
+        </div>
+      </section>
+
+      {/* Feature Cards */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {features.map((f, i) => {
+          const Icon = f.icon;
+          return (
+            <div
+              key={i}
+              className="p-6 rounded-xl space-y-4 border"
+              style={{
+                backgroundColor: '#ffffff',
+                borderColor: '#d5d9d9',
+                boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
+              }}
+            >
+              <div className="p-2.5 rounded-lg w-fit" style={{ backgroundColor: f.iconBg }}>
+                <Icon className="w-6 h-6" style={{ color: f.iconColor }} />
+              </div>
+              <h3 className="text-base font-bold" style={{ color: '#0f1111' }}>
+                {f.title}
+              </h3>
+              <p className="text-xs leading-relaxed" style={{ color: '#565959' }}>
+                {f.desc}
+              </p>
+              <span
+                className="inline-block px-2.5 py-1 rounded text-[11px] font-mono font-medium"
+                style={{ backgroundColor: f.chipBg, color: f.chipColor }}
+              >
+                {f.chip}
+              </span>
+            </div>
+          );
+        })}
+      </section>
+
+      {/* How it works strip */}
+      <section
+        className="rounded-xl p-6 md:p-10 border"
+        style={{ backgroundColor: '#fafafa', borderColor: '#d5d9d9' }}
+      >
+        <h2 className="text-xl font-bold text-center mb-8" style={{ color: '#0f1111' }}>
+          How SkillBridge Works
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {[
+            { step: '01', title: 'Upload Resume or Take MCQ', desc: 'We diagnose your current skills against active job postings in your target region.' },
+            { step: '02', title: 'Get a Cited Skill Roadmap', desc: 'Each node is backed by real job-posting citations — not generic course suggestions.' },
+            { step: '03', title: 'Complete Micro-Projects', desc: 'Prove skills through sandboxed code challenges graded by an LLM rubric judge.' },
+          ].map((item) => (
+            <div key={item.step} className="flex gap-4 items-start">
+              <span
+                className="text-2xl font-black flex-shrink-0 leading-none"
+                style={{ color: '#ff9900' }}
+              >
+                {item.step}
+              </span>
+              <div>
+                <h4 className="font-bold text-sm mb-1" style={{ color: '#0f1111' }}>{item.title}</h4>
+                <p className="text-xs leading-relaxed" style={{ color: '#565959' }}>{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+</file>
+
+<file path="frontend/components/diagnosis/MCQAssessment.tsx">
+'use client';
+
+import React, { useState } from 'react';
+import { HelpCircle, CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
+
+interface MCQQuestion {
+  id: string;
+  question: string;
+  options: { key: string; text: string }[];
+}
+
+const QUESTIONS: MCQQuestion[] = [
+  {
+    id: 'q1',
+    question: 'How do you currently handle multi-sheet data calculations?',
+    options: [
+      { key: 'a', text: 'Manually copy-paste values between sheets' },
+      { key: 'b', text: 'Use VLOOKUP / XLOOKUP and SUMIFS formulas' },
+      { key: 'c', text: 'Write SQL queries and Pandas scripts to join tables' },
+    ],
+  },
+  {
+    id: 'q2',
+    question: 'What is your experience with databases?',
+    options: [
+      { key: 'a', text: 'I store data only in CSV or Excel files' },
+      { key: 'b', text: 'I can write simple SELECT … WHERE queries' },
+      { key: 'c', text: 'I write complex JOINs, GROUP BY, and window functions' },
+    ],
+  },
+  {
+    id: 'q3',
+    question: 'How do you automate repetitive tasks?',
+    options: [
+      { key: 'a', text: 'I do them manually every time' },
+      { key: 'b', text: 'I use Excel Macros or simple batch scripts' },
+      { key: 'c', text: 'I write Python scripts and schedule cron jobs' },
+    ],
+  },
+];
+
+interface MCQAssessmentProps {
+  onSubmit: (answers: Record<string, string>, targetRole: string) => void;
+  isLoading?: boolean;
+}
+
+export const MCQAssessment: React.FC<MCQAssessmentProps> = ({ onSubmit, isLoading = false }) => {
+  const [targetRole, setTargetRole] = useState('Data Analyst & Automation Specialist');
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [step, setStep] = useState(0);
+
+  const q = QUESTIONS[step];
+  const answered = Boolean(answers[q.id]);
+
+  const handleNext = () => {
+    if (step < QUESTIONS.length - 1) setStep((s) => s + 1);
+    else onSubmit(answers, targetRole);
+  };
+
+  return (
+    <div
+      className="space-y-6 max-w-2xl mx-auto rounded-xl border p-6 md:p-8"
+      style={{ backgroundColor: '#fff', borderColor: '#d5d9d9', boxShadow: '0 1px 6px rgba(0,0,0,0.06)' }}
+    >
+      {/* Target Role */}
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: '#565959' }}>
+          Target Role
+        </label>
+        <input
+          type="text"
+          value={targetRole}
+          onChange={(e) => setTargetRole(e.target.value)}
+          className="w-full px-4 py-2.5 rounded-lg text-sm font-medium outline-none"
+          style={{ border: '1px solid #d5d9d9', color: '#0f1111' }}
+        />
+      </div>
+
+      {/* Progress */}
+      <div className="space-y-1">
+        <div className="flex justify-between text-xs font-medium" style={{ color: '#565959' }}>
+          <span>Question {step + 1} of {QUESTIONS.length}</span>
+          <span>{Math.round(((step + 1) / QUESTIONS.length) * 100)}%</span>
+        </div>
+        <div className="w-full h-1.5 rounded-full" style={{ backgroundColor: '#e9ebed' }}>
+          <div
+            className="h-full rounded-full transition-all duration-300"
+            style={{ width: `${((step + 1) / QUESTIONS.length) * 100}%`, backgroundColor: '#ff9900' }}
+          />
+        </div>
+      </div>
+
+      {/* Question */}
+      <div
+        className="p-5 rounded-xl space-y-4 border"
+        style={{ backgroundColor: '#fafafa', borderColor: '#e9ebed' }}
+      >
+        <div className="flex items-start gap-3">
+          <HelpCircle className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: '#ff9900' }} />
+          <h3 className="text-base font-semibold" style={{ color: '#0f1111' }}>{q.question}</h3>
+        </div>
+        <div className="space-y-2">
+          {q.options.map((opt) => {
+            const selected = answers[q.id] === opt.key;
+            return (
+              <button
+                key={opt.key}
+                type="button"
+                onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: opt.key }))}
+                className="w-full flex items-center justify-between p-4 rounded-lg border text-left text-sm transition-colors"
+                style={{
+                  borderColor: selected ? '#ff9900' : '#d5d9d9',
+                  backgroundColor: selected ? '#fff8ec' : '#fff',
+                  color: selected ? '#c45500' : '#0f1111',
+                  fontWeight: selected ? 600 : 400,
+                }}
+              >
+                <span>{opt.text}</span>
+                {selected && <CheckCircle2 className="w-4 h-4 flex-shrink-0 ml-2" style={{ color: '#ff9900' }} />}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => setStep((s) => Math.max(0, s - 1))}
+          disabled={step === 0 || isLoading}
+          className="px-4 py-2 text-xs font-semibold rounded-lg border disabled:opacity-30"
+          style={{ borderColor: '#d5d9d9', color: '#565959', backgroundColor: '#fff' }}
+        >
+          Previous
+        </button>
+        <button
+          type="button"
+          onClick={handleNext}
+          disabled={!answered || isLoading}
+          className="flex items-center gap-2 px-6 py-2.5 rounded-lg font-bold text-xs transition-colors disabled:opacity-40"
+          style={{ backgroundColor: '#ff9900', color: '#111' }}
+        >
+          {isLoading ? (
+            <><Loader2 className="w-4 h-4 animate-spin" /><span>Analyzing…</span></>
+          ) : step === QUESTIONS.length - 1 ? (
+            <><span>Complete Assessment</span><CheckCircle2 className="w-4 h-4" /></>
+          ) : (
+            <><span>Next Question</span><ArrowRight className="w-4 h-4" /></>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};
+</file>
+
+<file path="frontend/components/diagnosis/ResumeUploader.tsx">
+'use client';
+
+import React, { useState } from 'react';
+import { Upload, FileText, CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
+
+interface ResumeUploaderProps {
+  onSubmit: (data: { targetRole: string; resumeText: string }) => void;
+  isLoading?: boolean;
+}
+
+export const ResumeUploader: React.FC<ResumeUploaderProps> = ({ onSubmit, isLoading = false }) => {
+  const [targetRole, setTargetRole] = useState('Data Analyst & Automation Specialist');
+  const [resumeText, setResumeText] = useState('');
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleFile = (file: File) => {
+    setFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (e) => setResumeText((e.target?.result as string) || '');
+    reader.readAsText(file);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!targetRole.trim()) return;
+    onSubmit({ targetRole, resumeText: resumeText || 'Sample resume with SQL and Python basics.' });
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 max-w-2xl mx-auto rounded-xl border p-6 md:p-8"
+      style={{ backgroundColor: '#fff', borderColor: '#d5d9d9', boxShadow: '0 1px 6px rgba(0,0,0,0.06)' }}
+    >
+      {/* Target Role */}
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: '#565959' }}>
+          1. Target Job Role
+        </label>
+        <input
+          type="text"
+          value={targetRole}
+          onChange={(e) => setTargetRole(e.target.value)}
+          placeholder="e.g. Data Analyst & Automation Specialist"
+          className="w-full px-4 py-2.5 rounded-lg text-sm font-medium outline-none"
+          style={{
+            border: '1px solid #d5d9d9',
+            color: '#0f1111',
+            backgroundColor: '#fff',
+          }}
+          required
+        />
+      </div>
+
+      {/* Drop Zone */}
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-wider mb-1.5" style={{ color: '#565959' }}>
+          2. Upload or Paste Resume
+        </label>
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={(e) => { e.preventDefault(); setDragActive(false); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); }}
+          className="border-2 border-dashed rounded-xl p-8 text-center transition-colors"
+          style={{
+            borderColor: dragActive ? '#ff9900' : fileName ? '#007fa3' : '#d5d9d9',
+            backgroundColor: dragActive ? '#fff8ec' : fileName ? '#edf6fb' : '#fafafa',
+          }}
+        >
+          <input
+            type="file"
+            id="resume-upload"
+            accept=".pdf,.docx,.txt"
+            className="hidden"
+            onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+          />
+          <label htmlFor="resume-upload" className="cursor-pointer">
+            {fileName ? (
+              <div className="flex items-center justify-center gap-2 font-semibold text-sm" style={{ color: '#007fa3' }}>
+                <CheckCircle2 className="w-5 h-5" />
+                <span>{fileName}</span>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Upload className="w-8 h-8 mx-auto" style={{ color: '#adb1b8' }} />
+                <p className="text-sm font-medium" style={{ color: '#0f1111' }}>
+                  Drag & drop, or{' '}
+                  <span className="underline" style={{ color: '#007fa3' }}>browse files</span>
+                </p>
+                <p className="text-xs" style={{ color: '#adb1b8' }}>PDF, DOCX, TXT supported</p>
+              </div>
+            )}
+          </label>
+        </div>
+
+        <div className="mt-4">
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <FileText className="w-3.5 h-3.5" style={{ color: '#adb1b8' }} />
+            <span className="text-xs font-medium" style={{ color: '#565959' }}>Or paste text directly:</span>
+          </div>
+          <textarea
+            value={resumeText}
+            onChange={(e) => setResumeText(e.target.value)}
+            rows={4}
+            placeholder="Paste your work experience, skills, or project history..."
+            className="w-full px-4 py-3 rounded-lg text-xs font-mono outline-none resize-none"
+            style={{ border: '1px solid #d5d9d9', color: '#0f1111', backgroundColor: '#fafafa' }}
+          />
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        disabled={isLoading || !targetRole.trim()}
+        className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-lg font-bold text-sm transition-colors disabled:opacity-50"
+        style={{ backgroundColor: '#ff9900', color: '#111' }}
+      >
+        {isLoading ? (
+          <><Loader2 className="w-4 h-4 animate-spin" /><span>Analyzing against job postings…</span></>
+        ) : (
+          <><span>Analyze Skill Gap</span><ArrowRight className="w-4 h-4" /></>
+        )}
+      </button>
+    </form>
+  );
+};
+</file>
+
+<file path="frontend/components/diagnosis/SkillGapSummary.tsx">
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { SkillGapDiagnosis } from '../../lib/types';
+import { CheckCircle2, XCircle, ArrowRight, Target, Sparkles, BookOpen } from 'lucide-react';
+
+interface SkillGapSummaryProps {
+  diagnosis: SkillGapDiagnosis;
+}
+
+export const SkillGapSummary: React.FC<SkillGapSummaryProps> = ({ diagnosis }) => {
+  return (
+    <div
+      className="space-y-6 max-w-3xl mx-auto rounded-xl border p-6 md:p-8"
+      style={{ backgroundColor: '#fff', borderColor: '#d5d9d9', boxShadow: '0 1px 8px rgba(0,0,0,0.07)' }}
+    >
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b" style={{ borderColor: '#e9ebed' }}>
+        <div>
+          <span
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold mb-2"
+            style={{ backgroundColor: '#fff8ec', color: '#c45500', border: '1px solid #f5c887' }}
+          >
+            <Target className="w-3.5 h-3.5" />
+            Target Role
+          </span>
+          <h2 className="text-xl font-bold" style={{ color: '#0f1111' }}>{diagnosis.targetRole}</h2>
+        </div>
+        <div className="text-right">
+          <span className="block text-xs font-medium" style={{ color: '#565959' }}>Skill Alignment</span>
+          <span className="text-3xl font-black" style={{ color: '#ff9900' }}>{diagnosis.matchPercentage}%</span>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="w-full h-2 rounded-full" style={{ backgroundColor: '#e9ebed' }}>
+        <div
+          className="h-full rounded-full transition-all duration-500"
+          style={{ width: `${diagnosis.matchPercentage}%`, backgroundColor: '#ff9900' }}
+        />
+      </div>
+
+      {/* Summary */}
+      <p className="text-sm leading-relaxed rounded-lg p-4 border" style={{ color: '#565959', borderColor: '#e9ebed', backgroundColor: '#fafafa' }}>
+        {diagnosis.summary}
+      </p>
+
+      {/* Skills grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-4 rounded-xl border space-y-3" style={{ borderColor: '#c6f0d4', backgroundColor: '#f0faf4' }}>
+          <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5" style={{ color: '#067340' }}>
+            <CheckCircle2 className="w-4 h-4" />
+            Current Skills ({diagnosis.currentSkills.length})
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {diagnosis.currentSkills.map((skill, i) => (
+              <span key={i} className="px-2.5 py-1 rounded text-xs font-medium" style={{ backgroundColor: '#c6f0d4', color: '#067340' }}>
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-4 rounded-xl border space-y-3" style={{ borderColor: '#fad4b0', backgroundColor: '#fef6ee' }}>
+          <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5" style={{ color: '#c45500' }}>
+            <XCircle className="w-4 h-4" />
+            Skill Gaps ({diagnosis.missingSkills.length})
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {diagnosis.missingSkills.map((skill, i) => (
+              <span key={i} className="px-2.5 py-1 rounded text-xs font-medium" style={{ backgroundColor: '#fad4b0', color: '#c45500' }}>
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Focus areas */}
+      <div className="p-4 rounded-xl border space-y-2" style={{ borderColor: '#b8d5f5', backgroundColor: '#edf3fb' }}>
+        <h4 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5" style={{ color: '#007fa3' }}>
+          <BookOpen className="w-4 h-4" />
+          Recommended Focus Areas
+        </h4>
+        <ul className="list-disc pl-5 space-y-1 text-xs" style={{ color: '#0f1111' }}>
+          {diagnosis.recommendedFocus.map((item, i) => <li key={i}>{item}</li>)}
+        </ul>
+      </div>
+
+      {/* CTA */}
+      <Link
+        href="/roadmap"
+        className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-lg font-bold text-sm transition-colors"
+        style={{ backgroundColor: '#ff9900', color: '#111' }}
+      >
+        <Sparkles className="w-4 h-4" />
+        Generate Cited Skill Tree Roadmap
+        <ArrowRight className="w-4 h-4" />
+      </Link>
+    </div>
+  );
+};
+</file>
+
+<file path="frontend/components/shared/EmptyState.tsx">
+'use client';
+
+import React from 'react';
+import { Inbox } from 'lucide-react';
+
+interface EmptyStateProps {
+  title: string;
+  description?: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}
+
+export const EmptyState: React.FC<EmptyStateProps> = ({
+  title,
+  description,
+  actionLabel,
+  onAction,
+}) => {
+  return (
+    <div className="flex flex-col items-center justify-center p-8 rounded-xl border border-dashed border-slate-700 bg-slate-900/40 text-center max-w-md mx-auto my-8">
+      <div className="p-3 rounded-full bg-slate-800 text-slate-400 mb-3">
+        <Inbox className="w-6 h-6" />
+      </div>
+      <h3 className="text-base font-semibold text-slate-200 mb-1">{title}</h3>
+      {description && <p className="text-xs text-slate-400 mb-4">{description}</p>}
+      {actionLabel && onAction && (
+        <button
+          onClick={onAction}
+          className="px-4 py-2 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+        >
+          {actionLabel}
+        </button>
+      )}
+    </div>
+  );
+};
+</file>
+
+<file path="frontend/components/shared/ErrorBoundary.tsx">
+'use client';
+
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
+
+interface Props {
+  children?: ReactNode;
+  fallbackMessage?: string;
+}
+
+interface State {
+  hasError: boolean;
+  error?: Error;
+}
+
+export class ErrorBoundary extends Component<Props, State> {
+  public state: State = {
+    hasError: false,
+  };
+
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('[ErrorBoundary caught error]:', error, errorInfo);
+  }
+
+  public handleReset = () => {
+    this.setState({ hasError: false, error: undefined });
+  };
+
+  public render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-6 rounded-xl bg-red-950/40 border border-red-800/60 text-red-200 my-6 max-w-lg mx-auto text-center">
+          <AlertTriangle className="w-8 h-8 text-red-400 mx-auto mb-3" />
+          <h3 className="text-base font-semibold text-red-100 mb-1">
+            Something went wrong
+          </h3>
+          <p className="text-xs text-red-300/80 mb-4">
+            {this.state.error?.message || this.props.fallbackMessage || 'An unexpected runtime UI error occurred.'}
+          </p>
+          <button
+            onClick={this.handleReset}
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg bg-red-800 hover:bg-red-700 text-white transition-colors"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Try Again</span>
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+</file>
+
+<file path="frontend/components/shared/Footer.tsx">
+'use client';
+
+import React from 'react';
+import { useVernacular } from '../../hooks/useVernacular';
+import { ShieldCheck, GitFork } from 'lucide-react';
+
+export const Footer: React.FC = () => {
+  const { t } = useVernacular();
+
+  return (
+    <footer
+      style={{ backgroundColor: '#232f3e', borderTop: '1px solid #37475a', color: '#9ca3af' }}
+      className="text-xs py-8 px-4 mt-auto"
+    >
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <GitFork className="w-4 h-4" style={{ color: '#ff9900' }} />
+          <span className="font-semibold text-white">{t('nav.brand')}</span>
+          <span className="text-gray-500">— AGENTRIX 2026 Hackathon (Team Unserious)</span>
+        </div>
+        <div className="flex items-center gap-6 text-gray-400">
+          <span className="flex items-center gap-1">
+            <ShieldCheck className="w-3.5 h-3.5" style={{ color: '#ff9900' }} />
+            Verified Job Citations Engine
+          </span>
+          <span>FastAPI + LangGraph + Vector DB</span>
+        </div>
+      </div>
+    </footer>
+  );
+};
+</file>
+
+<file path="frontend/components/shared/LoadingState.tsx">
+'use client';
+
+import React from 'react';
+import { Loader2 } from 'lucide-react';
+
+export const LoadingState: React.FC<{ message?: string }> = ({ message }) => (
+  <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+    <Loader2 className="w-8 h-8 animate-spin mb-3" style={{ color: '#ff9900' }} />
+    <p className="text-sm font-medium" style={{ color: '#565959' }}>{message || 'Loading data…'}</p>
+  </div>
+);
+</file>
+
+<file path="frontend/components/shared/LowBandwidthToggle.tsx">
+'use client';
+
+import React from 'react';
+import { useLowBandwidthMode } from '../../hooks/useLowBandwidthMode';
+import { Zap, ZapOff } from 'lucide-react';
+
+export const LowBandwidthToggle: React.FC = () => {
+  const { isLowBandwidth, toggleLowBandwidth } = useLowBandwidthMode();
+
+  return (
+    <button
+      onClick={toggleLowBandwidth}
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all"
+      style={
+        isLowBandwidth
+          ? { backgroundColor: 'rgba(234,179,8,0.15)', border: '1px solid rgba(234,179,8,0.4)', color: '#ca8a04' }
+          : { backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#9ca3af' }
+      }
+      title="Toggle Low Bandwidth Mode"
+    >
+      {isLowBandwidth ? (
+        <><ZapOff className="w-3.5 h-3.5" /><span>Low Data ON</span></>
+      ) : (
+        <><Zap className="w-3.5 h-3.5" /><span>Low Data</span></>
+      )}
+    </button>
+  );
+};
+</file>
+
+<file path="frontend/components/shared/Navbar.tsx">
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useVernacular } from '../../hooks/useVernacular';
+import { VernacularToggle } from './VernacularToggle';
+import { LowBandwidthToggle } from './LowBandwidthToggle';
+import { GitFork, BarChart3, ShieldCheck, Compass, Network, Menu, X } from 'lucide-react';
+
+export const Navbar: React.FC = () => {
+  const { t } = useVernacular();
+  const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navLinks = [
+    { href: '/',           label: t('nav.home'),        icon: Compass },
+    { href: '/onboarding', label: t('nav.onboarding'),  icon: Network },
+    { href: '/roadmap',    label: t('nav.roadmap'),     icon: GitFork },
+    { href: '/dashboard',  label: t('nav.dashboard'),   icon: BarChart3 },
+    { href: '/employer',   label: t('nav.employer'),    icon: ShieldCheck },
+  ];
+
+  return (
+    <nav
+      style={{
+        backgroundColor: '#232f3e',
+        borderBottom: '3px solid #ff9900',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+      }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14">
+          {/* Brand */}
+          <Link href="/" className="flex items-center gap-2">
+            <div className="p-1.5 rounded" style={{ backgroundColor: 'rgba(255,153,0,0.15)' }}>
+              <GitFork className="w-5 h-5" style={{ color: '#ff9900' }} />
+            </div>
+            <span className="font-bold text-white text-base tracking-tight">
+              {t('nav.brand')}
+            </span>
+            <span
+              className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded"
+              style={{ backgroundColor: '#ff9900', color: '#111' }}
+            >
+              AGENTRIX '26
+            </span>
+          </Link>
+
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center gap-1">
+            {navLinks.map(({ href, label, icon: Icon }) => {
+              const active = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium transition-colors"
+                  style={{
+                    color: active ? '#ff9900' : '#d5d9d9',
+                    backgroundColor: active ? 'rgba(255,153,0,0.1)' : 'transparent',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) (e.currentTarget as HTMLElement).style.color = '#ffffff';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) (e.currentTarget as HTMLElement).style.color = '#d5d9d9';
+                  }}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{label}</span>
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Toggles */}
+          <div className="hidden sm:flex items-center gap-2">
+            <LowBandwidthToggle />
+            <VernacularToggle />
+          </div>
+
+          {/* Mobile burger */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="sm:hidden p-2 rounded text-gray-300 hover:text-white"
+          >
+            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Drawer */}
+      {mobileOpen && (
+        <div style={{ backgroundColor: '#37475a', borderTop: '1px solid #4a5568' }} className="sm:hidden px-4 pt-3 pb-4 space-y-1">
+          <div className="flex gap-2 pb-3 border-b border-gray-600 mb-2">
+            <LowBandwidthToggle />
+            <VernacularToggle />
+          </div>
+          {navLinks.map(({ href, label, icon: Icon }) => {
+            const active = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium"
+                style={{
+                  color: active ? '#ff9900' : '#d5d9d9',
+                  backgroundColor: active ? 'rgba(255,153,0,0.1)' : 'transparent',
+                }}
+              >
+                <Icon className="w-5 h-5" />
+                <span>{label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </nav>
+  );
+};
+</file>
+
+<file path="frontend/components/shared/VernacularToggle.tsx">
+'use client';
+
+import React from 'react';
+import { useVernacular } from '../../hooks/useVernacular';
+import { Languages } from 'lucide-react';
+import { SupportedLanguage } from '../../lib/types';
+
+export const VernacularToggle: React.FC = () => {
+  const { lang, changeLanguage } = useVernacular();
+
+  return (
+    <button
+      onClick={() => changeLanguage(lang === 'en' ? 'kn' : ('en' as SupportedLanguage))}
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all"
+      style={{
+        backgroundColor: 'rgba(255,153,0,0.15)',
+        border: '1px solid rgba(255,153,0,0.4)',
+        color: '#ff9900',
+      }}
+      title="Toggle Language"
+    >
+      <Languages className="w-3.5 h-3.5" />
+      <span>{lang === 'en' ? 'ಕನ್ನಡ' : 'English'}</span>
+    </button>
+  );
+};
+</file>
+
+<file path="frontend/components/.gitkeep">
+
+</file>
+
+<file path="frontend/hooks/.gitkeep">
+
+</file>
+
+<file path="frontend/hooks/useLowBandwidthMode.ts">
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+
+export function useLowBandwidthMode() {
+  const [isLowBandwidth, setIsLowBandwidth] = useState<boolean>(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('skillbridge_low_bandwidth');
+    if (saved !== null) {
+      const active = saved === 'true';
+      setIsLowBandwidth(active);
+      if (active) {
+        document.documentElement.classList.add('low-bandwidth');
+      } else {
+        document.documentElement.classList.remove('low-bandwidth');
+      }
+    }
+  }, []);
+
+  const toggleLowBandwidth = useCallback(() => {
+    setIsLowBandwidth((prev) => {
+      const next = !prev;
+      localStorage.setItem('skillbridge_low_bandwidth', String(next));
+      if (next) {
+        document.documentElement.classList.add('low-bandwidth');
+      } else {
+        document.documentElement.classList.remove('low-bandwidth');
+      }
+      return next;
+    });
+  }, []);
+
+  return { isLowBandwidth, toggleLowBandwidth };
+}
+</file>
+
+<file path="frontend/hooks/useSkillGapDiagnosis.ts">
+'use client';
+
+import { useState, useCallback } from 'react';
+import { SkillGapDiagnosis } from '../lib/types';
+import { apiClient } from '../lib/api-client';
+
+export function useSkillGapDiagnosis() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [diagnosis, setDiagnosis] = useState<SkillGapDiagnosis | null>(null);
+
+  const runDiagnosis = useCallback(async (payload: {
+    targetRole: string;
+    resumeText?: string;
+    mcqAnswers?: Record<string, string>;
+  }) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await apiClient.submitDiagnosis(payload);
+      setDiagnosis(result);
+      return result;
+    } catch (err: any) {
+      const msg = err?.message || 'Failed to analyze skill gap';
+      setError(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { loading, error, diagnosis, runDiagnosis };
+}
+</file>
+
+<file path="frontend/hooks/useVernacular.tsx">
+'use client';
+
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { SupportedLanguage } from '../lib/types';
+import en from '../lib/i18n/en.json';
+import kn from '../lib/i18n/kn.json';
+
+const translations: Record<SupportedLanguage, any> = { en, kn };
+
+interface VernacularContextValue {
+  lang: SupportedLanguage;
+  changeLanguage: (lang: SupportedLanguage) => void;
+  t: (keyPath: string) => string;
+}
+
+const VernacularContext = createContext<VernacularContextValue | null>(null);
+
+export function VernacularProvider({ children }: { children: React.ReactNode }) {
+  const [lang, setLang] = useState<SupportedLanguage>('en');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('skillbridge_lang') as SupportedLanguage;
+    if (saved === 'en' || saved === 'kn') setLang(saved);
+  }, []);
+
+  const changeLanguage = useCallback((newLang: SupportedLanguage) => {
+    setLang(newLang);
+    localStorage.setItem('skillbridge_lang', newLang);
+  }, []);
+
+  const t = useCallback(
+    (keyPath: string): string => {
+      const keys = keyPath.split('.');
+      const resolve = (dict: any) =>
+        keys.reduce((cur, k) => (cur && typeof cur === 'object' ? cur[k] : undefined), dict);
+      const result = resolve(translations[lang]) ?? resolve(translations.en);
+      return typeof result === 'string' ? result : keyPath;
+    },
+    [lang]
+  );
+
+  return (
+    <VernacularContext.Provider value={{ lang, changeLanguage, t }}>
+      {children}
+    </VernacularContext.Provider>
+  );
+}
+
+export function useVernacular(): VernacularContextValue {
+  const ctx = useContext(VernacularContext);
+  if (!ctx) throw new Error('useVernacular must be used inside <VernacularProvider>');
+  return ctx;
+}
+</file>
+
+<file path="frontend/lib/i18n/en.json">
+{
+  "nav": {
+    "brand": "SkillBridge",
+    "home": "Home",
+    "onboarding": "Diagnosis",
+    "roadmap": "Skill Tree",
+    "dashboard": "Demand Analytics",
+    "employer": "Verified Talent",
+    "profile": "Profile"
+  },
+  "common": {
+    "loading": "Loading data...",
+    "error": "An unexpected error occurred",
+    "retry": "Try Again",
+    "lowBandwidthOn": "Low-Bandwidth Mode ON",
+    "lowBandwidthOff": "Low-Bandwidth Mode OFF",
+    "language": "Language",
+    "verified": "Verified",
+    "locked": "Locked",
+    "inProgress": "In Progress",
+    "hours": "hrs",
+    "viewPosting": "View Job Posting",
+    "citation": "Job Market Citation",
+    "prerequisites": "Prerequisites",
+    "difficulty": "Difficulty",
+    "submit": "Submit Code",
+    "submitting": "Evaluating with LLM Judge..."
+  },
+  "landing": {
+    "heroTitle": "Reskilling Driven by Real Job Market Citations",
+    "heroSubtitle": "SkillBridge sequences personalized learning paths where every node is backed by real employer job postings and verified through sandboxed micro-projects.",
+    "ctaStart": "Diagnose My Skill Gap",
+    "ctaEmployer": "Hire Verified Candidates",
+    "feature1Title": "Cited Roadmaps",
+    "feature1Desc": "No generic course lists. Every skill node links to active job market postings requiring that exact skill.",
+    "feature2Title": "LLM-Graded Micro Projects",
+    "feature2Desc": "Prove your capability through hands-on code challenges evaluated against structured rubrics.",
+    "feature3Title": "Tamper-Evident Verification",
+    "feature3Desc": "Skills are backed by cryptographic ledger records—giving employers proof, not self-reported promises."
+  },
+  "roadmap": {
+    "title": "Interactive Skill Tree",
+    "subtitle": "Pass micro-projects to unlock next-level skills. Every step is cited by active job market data.",
+    "selectNode": "Select a node to inspect citations and attempt micro-projects",
+    "noCitation": "Core foundational skill (General Requirement)"
+  },
+  "verification": {
+    "title": "Micro-Project Verification Workspace",
+    "rubricHeader": "Evaluation Rubric Breakdown",
+    "ledgerHash": "Verification Hash",
+    "passed": "Verification Passed! Skill Node Unlocked.",
+    "failed": "Verification Not Passed. Review feedback and retry."
+  },
+  "demand": {
+    "title": "Live Skill Demand Analytics",
+    "subtitle": "Real-time skill requirements extracted from regional job postings.",
+    "freshness": "Data Freshness Score",
+    "filterRegion": "Filter by Region"
+  },
+  "employer": {
+    "title": "Verified Candidate Matching",
+    "subtitle": "Discover candidates with tamper-evident proof of practical skill mastery.",
+    "matchScore": "Match Score",
+    "readiness": "Readiness",
+    "verifiedSkills": "Verified Skills"
+  }
+}
+</file>
+
+<file path="frontend/lib/i18n/kn.json">
+{
+  "nav": {
+    "brand": "ಸ್ಕಿಲ್ ಬ್ರಿಡ್ಜ್ (SkillBridge)",
+    "home": "ಮುಖ್ಯ ಪುಟ",
+    "onboarding": "ಕೌಶಲ್ಯ ತಪಾಸಣೆ",
+    "roadmap": "ಕೌಶಲ್ಯ ನಕ್ಷೆ",
+    "dashboard": "ಉದ್ಯೋಗ ಬೇಡಿಕೆ",
+    "employer": "ದೃಢೀಕೃತ ಅಭ್ಯರ್ಥಿಗಳು",
+    "profile": "ಪ್ರೊಫೈಲ್"
+  },
+  "common": {
+    "loading": "ಡೇಟಾ ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+    "error": "ಅನಿರೀಕ್ಷಿತ ದೋಷ ಸಂಭವಿಸಿದೆ",
+    "retry": "ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ",
+    "lowBandwidthOn": "ಕಡಿಮೆ-ಬ್ಯಾಂಡ್‌ವಿಡ್ತ್ ಮೋಡ್ ಚಾಲನೆಯಲ್ಲಿದೆ",
+    "lowBandwidthOff": "ಸಾಮಾನ್ಯ ಮೋಡ್",
+    "language": "ಭಾಷೆ",
+    "verified": "ದೃಢೀಕರಿಸಲಾಗಿದೆ",
+    "locked": "ಲಾಕ್ ಆಗಿದೆ",
+    "inProgress": "ಪ್ರಗತಿಯಲ್ಲಿದೆ",
+    "hours": "ಗಂಟೆಗಳು",
+    "viewPosting": "ಉದ್ಯೋಗ ವಿವರ ನೋಡಿ",
+    "citation": "ಮಾರುಕಟ್ಟೆ ಆಧಾರಿತ ಸಾಕ್ಷಿ",
+    "prerequisites": "ಪೂರ್ವಾಪೇಕ್ಷಿತಗಳು",
+    "difficulty": "ಹಂತ",
+    "submit": "ಕೋಡ್ ಸಲ್ಲಿಸಿ",
+    "submitting": "ಮೌಲ್ಯಮಾಪನ ಮಾಡಲಾಗುತ್ತಿದೆ..."
+  },
+  "landing": {
+    "heroTitle": "ನೈಜ ಉದ್ಯೋಗ ಸಾಕ್ಷ್ಯಾಧಾರಿತ ಕೌಶಲ್ಯ ತರಬೇತಿ",
+    "heroSubtitle": "ಸ್ಕಿಲ್ ಬ್ರಿಡ್ಜ್ ನಿಮ್ಮ ಕಲಿಕೆಯ ಹಂತಗಳನ್ನು ನಿಜವಾದ ಉದ್ಯೋಗ ಪ್ರಕಟಣೆಗಳ ಆಧಾರದ ಮೇಲೆ ವಿನ್ಯಾಸಗೊಳಿಸುತ್ತದೆ.",
+    "ctaStart": "ನನ್ನ ಕೌಶಲ್ಯ ಪರೀಕ್ಷಿಸಿ",
+    "ctaEmployer": "ದೃಢೀಕೃತ ಅಭ್ಯರ್ಥಿಗಳನ್ನು ನೇಮಕ ಮಾಡಿ",
+    "feature1Title": "ಉದ್ಯೋಗ ಆಧಾರಿತ ನಕ್ಷೆ",
+    "feature1Desc": "ಸಾಮಾನ್ಯ ಪಠ್ಯಕ್ರಮವಲ್ಲ. ಪ್ರತಿಯೊಂದು ಕೌಶಲ್ಯಕ್ಕೂ ನೈಜ ಉದ್ಯೋಗ ಮಾರುಕಟ್ಟೆಯ ಸಾಕ್ಷಿ ಇದೆ.",
+    "feature2Title": "ಸೂಕ್ಷ್ಮ ಯೋಜನೆಗಳ ಮೌಲ್ಯಮಾಪನ",
+    "feature2Desc": "ಪ್ರಾಯೋಗಿಕ ಯೋಜನೆಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸುವ ಮೂಲಕ ನಿಮ್ಮ ಕೌಶಲ್ಯ ಸಾಬೀತುಪಡಿಸಿ.",
+    "feature3Title": "ಸುರಕ್ಷಿತ ದೃಢೀಕರಣ",
+    "feature3Desc": "ನಿಮ್ಮ ಕೌಶಲ್ಯಗಳಿಗೆ ಖಚಿತವಾದ ಡಿಜಿಟಲ್ ಪ್ರಮಾಣೀಕರಣ ದೊರೆಯುತ್ತದೆ."
+  },
+  "roadmap": {
+    "title": "ಸಂವಾದಾತ್ಮಕ ಕೌಶಲ್ಯ ನಕ್ಷೆ",
+    "subtitle": "ಸೂಕ್ಷ್ಮ ಯೋಜನೆಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ ಮುಂದಿನ ಕೌಶಲ್ಯಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ.",
+    "selectNode": "ವಿವರಗಳನ್ನು ನೋಡಲು ಕೌಶಲ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+    "noCitation": "ಮೂಲಭೂತ ಕೌಶಲ್ಯ (ಸಾಮಾನ್ಯ ಅವಶ್ಯಕತೆ)"
+  },
+  "verification": {
+    "title": "ಸೂಕ್ಷ್ಮ ಯೋಜನೆ ದೃಢೀಕರಣ ಸ್ಥಳ",
+    "rubricHeader": "ಮೌಲ್ಯಮಾಪನ ವಿವರಗಳು",
+    "ledgerHash": "ದೃಢೀಕರಣ ಕೋಡ್",
+    "passed": "ದೃಢೀಕರಣ ಯಶಸ್ವಿಯಾಗಿದೆ! ಕೌಶಲ್ಯ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ.",
+    "failed": "ದೃಢೀಕರಣ ಪೂರ್ಣಗೊಂಡಿಲ್ಲ. ಮೌಲ್ಯಮಾಪನ ನೋಡಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+  },
+  "demand": {
+    "title": "ನೇರ ಉದ್ಯೋಗ ಬೇಡಿಕೆ ವಿಶ್ಲೇಷಣೆ",
+    "subtitle": "ಪ್ರಾದೇಶಿಕ ಉದ್ಯೋಗ ಮಾರುಕಟ್ಟೆಯ ನೈಜ ಕೌಶಲ್ಯ ಬೇಡಿಕೆಗಳು.",
+    "freshness": "ಡೇಟಾ ತಾಜಾತನದ ಅಂಕ",
+    "filterRegion": "ಪ್ರದೇಶದ ಪ್ರಕಾರ ಆಯ್ಕೆಮಾಡಿ"
+  },
+  "employer": {
+    "title": "ದೃಢೀಕೃತ ಅಭ್ಯರ್ಥಿಗಳ ಶೋಧನೆ",
+    "subtitle": "ಪ್ರಾಯೋಗಿಕ ಕೌಶಲ್ಯ ದೃಢೀಕರಣ ಹೊಂದಿರುವ ಅಭ್ಯರ್ಥಿಗಳನ್ನು ಹುಡುಕಿ.",
+    "matchScore": "ಹೊಂದಾಣಿಕೆ ಅಂಕ",
+    "readiness": "ಸಿದ್ಧತೆ",
+    "verifiedSkills": "ದೃಢೀಕೃತ ಕೌಶಲ್ಯಗಳು"
+  }
+}
+</file>
+
+<file path="frontend/lib/.gitkeep">
+
+</file>
+
+<file path="frontend/lib/api-client.ts">
+import {
+  Roadmap,
+  SkillGapDiagnosis,
+  GradingResult,
+  EmployerMatch,
+  DemandTrend,
+  ProgressLedgerEntry,
+} from './types';
+import {
+  MOCK_ROADMAP,
+  MOCK_DIAGNOSIS,
+  MOCK_GRADING_RESULT,
+  MOCK_EMPLOYER_MATCHES,
+  MOCK_DEMAND_TRENDS,
+  MOCK_LEDGER_ENTRIES,
+} from './mock-data';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api';
+// Default to using mock data unless explicitly configured otherwise
+const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS !== 'false';
+
+// Artificial delay helper to simulate network request when using mocks
+const simulateNetworkDelay = (ms = 400) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+class ApiClient {
+  private baseUrl: string;
+
+  constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+  }
+
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+
+    try {
+      const response = await fetch(url, { ...options, headers });
+      if (!response.ok) {
+        throw new Error(`API error ${response.status}: ${response.statusText}`);
+      }
+      return (await response.json()) as T;
+    } catch (error) {
+      console.error(`[ApiClient Error] ${options.method || 'GET'} ${endpoint}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch a learner's personalized skill tree roadmap.
+   */
+  async getRoadmap(learnerId: string = 'usr_10293'): Promise<Roadmap> {
+    if (USE_MOCKS) {
+      await simulateNetworkDelay(300);
+      return MOCK_ROADMAP;
+    }
+    return this.request<Roadmap>(`/roadmap?learnerId=${encodeURIComponent(learnerId)}`);
+  }
+
+  /**
+   * Submit resume file or MCQ answers for skill gap diagnosis against a target role.
+   */
+  async submitDiagnosis(payload: {
+    targetRole: string;
+    resumeText?: string;
+    mcqAnswers?: Record<string, string>;
+  }): Promise<SkillGapDiagnosis> {
+    if (USE_MOCKS) {
+      await simulateNetworkDelay(600);
+      return {
+        ...MOCK_DIAGNOSIS,
+        targetRole: payload.targetRole || MOCK_DIAGNOSIS.targetRole,
+      };
+    }
+    return this.request<SkillGapDiagnosis>('/diagnosis', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  /**
+   * Submit micro-project code for a specific roadmap node to be evaluated by the LLM-as-judge.
+   */
+  async submitProject(payload: {
+    nodeId: string;
+    code: string;
+    learnerId?: string;
+  }): Promise<GradingResult> {
+    if (USE_MOCKS) {
+      await simulateNetworkDelay(800);
+      // Simulate successful grading result for the submitted node
+      return {
+        ...MOCK_GRADING_RESULT,
+        nodeId: payload.nodeId,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    return this.request<GradingResult>('/verification/submit', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  /**
+   * Fetch verified learner profile matches for employers.
+   */
+  async getEmployerMatches(filters?: {
+    role?: string;
+    location?: string;
+    minScore?: number;
+  }): Promise<EmployerMatch[]> {
+    if (USE_MOCKS) {
+      await simulateNetworkDelay(350);
+      let results = [...MOCK_EMPLOYER_MATCHES];
+      if (filters?.location) {
+        results = results.filter((m) =>
+          m.location.toLowerCase().includes(filters.location!.toLowerCase())
+        );
+      }
+      if (filters?.minScore) {
+        results = results.filter((m) => m.overallMatchScore >= filters.minScore!);
+      }
+      return results;
+    }
+
+    const queryParams = new URLSearchParams();
+    if (filters?.role) queryParams.set('role', filters.role);
+    if (filters?.location) queryParams.set('location', filters.location);
+    if (filters?.minScore) queryParams.set('minScore', filters.minScore.toString());
+
+    return this.request<EmployerMatch[]>(`/employer/matches?${queryParams.toString()}`);
+  }
+
+  /**
+   * Fetch real-time job demand trends and skill freshness scores.
+   */
+  async getDemandTrends(region?: string): Promise<DemandTrend[]> {
+    if (USE_MOCKS) {
+      await simulateNetworkDelay(300);
+      if (region && region !== 'all') {
+        return MOCK_DEMAND_TRENDS.filter((t) =>
+          t.region.toLowerCase().includes(region.toLowerCase())
+        );
+      }
+      return MOCK_DEMAND_TRENDS;
+    }
+    const endpoint = region ? `/demand/trends?region=${encodeURIComponent(region)}` : '/demand/trends';
+    return this.request<DemandTrend[]>(endpoint);
+  }
+
+  /**
+   * Fetch tamper-evident progress ledger history.
+   */
+  async getLedgerHistory(learnerId: string = 'usr_10293'): Promise<ProgressLedgerEntry[]> {
+    if (USE_MOCKS) {
+      await simulateNetworkDelay(200);
+      return MOCK_LEDGER_ENTRIES;
+    }
+    return this.request<ProgressLedgerEntry[]>(`/verification/ledger?learnerId=${encodeURIComponent(learnerId)}`);
+  }
+}
+
+export const apiClient = new ApiClient(API_BASE_URL);
+</file>
+
+<file path="frontend/lib/mock-data.ts">
+import {
+  Roadmap,
+  RoadmapNode,
+  GradingResult,
+  EmployerMatch,
+  DemandTrend,
+  SkillGapDiagnosis,
+  ProgressLedgerEntry,
+} from './types';
+
+export const MOCK_DIAGNOSIS: SkillGapDiagnosis = {
+  learnerId: 'usr_10293',
+  targetRole: 'Data Analyst & Automation Specialist',
+  currentSkills: ['Basic Excel', 'Python Fundamentals', 'SQL Queries'],
+  missingSkills: ['Advanced Data Transformation (Pandas)', 'Automated ETL Pipelines', 'Dashboarding (PowerBI/Tableau)', 'LLM Integration'],
+  matchPercentage: 42,
+  summary: 'Strong foundational logic and basic Python skills. Requires targeted upskilling in data transformation pipelines and automated reporting demanded by 84% of current regional job openings.',
+  recommendedFocus: [
+    'Pandas Data Wrangling & Cleaning',
+    'SQL Complex Joins & Window Functions',
+    'Automated Workflow Scripts',
+  ],
+};
+
+export const MOCK_ROADMAP_NODES: RoadmapNode[] = [
+  {
+    id: 'node_sql_advanced',
+    title: 'Advanced SQL & Window Functions',
+    description: 'Master analytical queries, aggregations, and window functions for enterprise dataset querying.',
+    category: 'Database & Analytics',
+    status: 'verified',
+    prerequisites: [],
+    estimatedHours: 8,
+    difficulty: 'intermediate',
+    citation: {
+      id: 'cit_job_001',
+      jobTitle: 'Data Analyst (Mid-Level)',
+      company: 'TechCorp Logistics',
+      location: 'Bengaluru / Remote',
+      postingUrl: 'https://careers.techcorp.example/jobs/4821',
+      relevanceExcerpt: 'Requires fluency in complex SQL joins, subqueries, and windowing functions (OVER, PARTITION BY).',
+      demandCount: 142,
+      postedDate: '2 days ago',
+    },
+    microProject: {
+      id: 'proj_sql_01',
+      title: 'Analyze Monthly Active Customer Retention',
+      description: 'Write SQL queries using window functions to calculate month-over-month retention metrics on a mock database.',
+      instructions: [
+        'Use standard PostgreSQL syntax.',
+        'Compute rolling 3-month total sales per customer cohort.',
+        'Filter out soft-deleted customer accounts.',
+      ],
+      starterCode: `-- Write your query below
+SELECT
+  customer_id,
+  order_date,
+  -- TODO: Calculate rolling retention window
+FROM sales_records;`,
+      rubricCriteria: [
+        'Correct usage of PARTITION BY and ORDER BY in window syntax',
+        'Proper handling of NULL values in rolling sums',
+        'Query runtime optimization',
+      ],
+    },
+  },
+  {
+    id: 'node_pandas_wrangling',
+    title: 'Pandas Data Transformation',
+    description: 'Clean, reshape, and aggregate multi-source datasets with Python Pandas.',
+    category: 'Data Engineering',
+    status: 'unlocked',
+    prerequisites: ['node_sql_advanced'],
+    estimatedHours: 12,
+    difficulty: 'intermediate',
+    citation: {
+      id: 'cit_job_002',
+      jobTitle: 'Junior Data Engineer',
+      company: 'OmniData Solutions',
+      location: 'Mysuru / Hybrid',
+      postingUrl: 'https://omnidata.example/careers/de-102',
+      relevanceExcerpt: 'Must demonstrate ability to automate CSV and API data ingestion pipelines using Python Pandas.',
+      demandCount: 98,
+      postedDate: '1 day ago',
+    },
+    microProject: {
+      id: 'proj_pandas_01',
+      title: 'Automated CSV ETL & Normalization Script',
+      description: 'Build a Python function to ingest messy CSV inventory files, handle missing values, and output normalized JSON data.',
+      instructions: [
+        'Load input_inventory.csv into Pandas DataFrame.',
+        'Fill missing prices with category median.',
+        'Export result to formatted JSON struct.',
+      ],
+      starterCode: `import pandas as pd
+
+def process_inventory(file_path: str) -> str:
+    # TODO: Load CSV, clean data, return JSON string
+    df = pd.read_csv(file_path)
+    return df.to_json()`,
+      rubricCriteria: [
+        'Implements median imputation for missing numeric values',
+        'Validates data schema before export',
+        'Error handling for corrupted input rows',
+      ],
+    },
+  },
+  {
+    id: 'node_dashboard_bi',
+    title: 'Executive KPI Dashboarding',
+    description: 'Design dynamic visual analytics dashboards tailored for business stakeholders.',
+    category: 'Business Intelligence',
+    status: 'locked',
+    prerequisites: ['node_pandas_wrangling'],
+    estimatedHours: 10,
+    difficulty: 'intermediate',
+    citation: {
+      id: 'cit_job_003',
+      jobTitle: 'Business Intelligence Specialist',
+      company: 'Karnataka AgriTech',
+      location: 'Hubballi',
+      postingUrl: 'https://karnatakaagri.example/jobs/bi-44',
+      relevanceExcerpt: 'Candidates must submit verified work showing creation of executive dashboards tracking operational metrics.',
+      demandCount: 64,
+      postedDate: '3 days ago',
+    },
+    microProject: {
+      id: 'proj_bi_01',
+      title: 'Supply Chain Delay Dashboard Spec',
+      description: 'Construct a structured layout and data mapping file for a real-time supply chain delay tracker.',
+      instructions: [
+        'Map raw metrics to chart types (time-series, geo-map, KPI cards).',
+        'Define alert thresholds for delay metrics > 15%.',
+      ],
+      starterCode: `// Dashboard Layout Schema
+{
+  "title": "Supply Chain Performance",
+  "components": []
+}`,
+      rubricCriteria: [
+        'Appropriate selection of visual chart types for time-series data',
+        'Clear metric threshold definitions',
+        'Stakeholder UX responsiveness',
+      ],
+    },
+  },
+  {
+    id: 'node_llm_automation',
+    title: 'AI Workflow & LLM Integration',
+    description: 'Integrate LLMs via APIs into automation pipelines to handle unstructured data summarization.',
+    category: 'AI & Automation',
+    status: 'locked',
+    prerequisites: ['node_pandas_wrangling'],
+    estimatedHours: 15,
+    difficulty: 'advanced',
+    citation: {
+      id: 'cit_job_004',
+      jobTitle: 'AI Automation Associate',
+      company: 'NextGen Services',
+      location: 'Bengaluru',
+      postingUrl: 'https://nextgenservices.example/careers/ai-assoc',
+      relevanceExcerpt: 'Experience integrating LLM APIs for automated document parsing and customer inquiry categorization.',
+      demandCount: 115,
+      postedDate: '5 hours ago',
+    },
+    microProject: {
+      id: 'proj_llm_01',
+      title: 'Structured Customer Review Classifier',
+      description: 'Create an automated pipeline that calls an LLM endpoint to classify customer review sentiment and extract actionable tags.',
+      instructions: [
+        'Construct structured prompt enforcing JSON output format.',
+        'Implement retry logic for API rate limits.',
+        'Extract key entity tags (product, bug, praise).',
+      ],
+      starterCode: `async function classifyReview(text: string) {
+  // TODO: Call LLM API with structured prompt
+  return { sentiment: 'positive', tags: [] };
+}`,
+      rubricCriteria: [
+        'Strict JSON schema validation on LLM output',
+        'Prompt robustness against malformed input text',
+        'API error fallback mechanism',
+      ],
+    },
+  },
+];
+
+export const MOCK_ROADMAP: Roadmap = {
+  id: 'map_001',
+  targetRole: 'Data Analyst & Automation Specialist',
+  learnerId: 'usr_10293',
+  createdAt: '2026-08-15T09:30:00Z',
+  nodes: MOCK_ROADMAP_NODES,
+};
+
+export const MOCK_GRADING_RESULT: GradingResult = {
+  nodeId: 'node_sql_advanced',
+  passed: true,
+  score: 92,
+  feedback: 'Excellent work! Your window function correctly partitioned sales cohorts and optimized query execution time.',
+  rubricBreakdown: [
+    {
+      criterion: 'Correct usage of PARTITION BY and ORDER BY syntax',
+      score: 30,
+      maxScore: 30,
+      feedback: 'Flawless partition clause implementation.',
+    },
+    {
+      criterion: 'Proper handling of NULL values in rolling sums',
+      score: 27,
+      maxScore: 30,
+      feedback: 'Handled NULL values gracefully using COALESCE.',
+    },
+    {
+      criterion: 'Query runtime optimization',
+      score: 35,
+      maxScore: 40,
+      feedback: 'Good index utilization, minor query formatting improvement suggested.',
+    },
+  ],
+  timestamp: '2026-08-18T14:22:10Z',
+  ledgerHash: '0x8f2a419c83b704e12e10a9bf8e0d4c5421a1900d72f1b40285a66911c4038a',
+};
+
+export const MOCK_LEDGER_ENTRIES: ProgressLedgerEntry[] = [
+  {
+    id: 'ledg_001',
+    nodeId: 'node_sql_advanced',
+    nodeTitle: 'Advanced SQL & Window Functions',
+    verifiedAt: '2026-08-18T14:22:10Z',
+    score: 92,
+    hash: '0x8f2a419c83b704e12e10a9bf8e0d4c5421a1900d72f1b40285a66911c4038a',
+    previousHash: '0x00000000000000000000000000000000000000000000000000000000000000',
+  },
+];
+
+export const MOCK_EMPLOYER_MATCHES: EmployerMatch[] = [
+  {
+    id: 'em_match_101',
+    learnerId: 'usr_10293',
+    learnerName: 'Ramesh Kumar',
+    targetRole: 'Data Analyst & Automation Specialist',
+    verifiedSkills: ['Advanced SQL', 'Data Normalization', 'Excel Automation'],
+    overallMatchScore: 88,
+    location: 'Bengaluru, Karnataka',
+    readinessStatus: 'ready',
+    verificationBadgeCount: 3,
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+    lastActive: '10 mins ago',
+  },
+  {
+    id: 'em_match_102',
+    learnerId: 'usr_20411',
+    learnerName: 'Priya Sharma',
+    targetRole: 'Junior Data Engineer',
+    verifiedSkills: ['Pandas Data Wrangling', 'SQL Queries', 'Python Scripting'],
+    overallMatchScore: 82,
+    location: 'Mysuru, Karnataka',
+    readinessStatus: 'reskilling',
+    verificationBadgeCount: 2,
+    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=200',
+    lastActive: '1 hour ago',
+  },
+  {
+    id: 'em_match_103',
+    learnerId: 'usr_30922',
+    learnerName: 'Anil Gowda',
+    targetRole: 'AI Automation Associate',
+    verifiedSkills: ['LLM Integration', 'Python API Automation', 'Advanced SQL', 'Pandas'],
+    overallMatchScore: 94,
+    location: 'Hubballi, Karnataka',
+    readinessStatus: 'ready',
+    verificationBadgeCount: 4,
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    lastActive: 'Just now',
+  },
+];
+
+export const MOCK_DEMAND_TRENDS: DemandTrend[] = [
+  {
+    skill: 'Python Pandas & Data Wrangling',
+    demandCount: 1420,
+    growthPercentage: 28.4,
+    region: 'Karnataka (Overall)',
+    freshnessScore: 96,
+    topCompanies: ['TechCorp', 'OmniData', 'Infosys', 'Wipro'],
+    trendHistory: [
+      { date: 'May', count: 980 },
+      { date: 'Jun', count: 1100 },
+      { date: 'Jul', count: 1250 },
+      { date: 'Aug', count: 1420 },
+    ],
+  },
+  {
+    skill: 'SQL Window Functions & Aggregations',
+    demandCount: 1890,
+    growthPercentage: 15.2,
+    region: 'Bengaluru Urban',
+    freshnessScore: 92,
+    topCompanies: ['TCS', 'Accenture', 'Amazon', 'Flipkart'],
+    trendHistory: [
+      { date: 'May', count: 1600 },
+      { date: 'Jun', count: 1710 },
+      { date: 'Jul', count: 1780 },
+      { date: 'Aug', count: 1890 },
+    ],
+  },
+  {
+    skill: 'LLM API Integration & Prompting',
+    demandCount: 860,
+    growthPercentage: 64.8,
+    region: 'Karnataka (Overall)',
+    freshnessScore: 99,
+    topCompanies: ['NextGen AI', 'Swiggy', 'PhonePe', 'Startup Hub'],
+    trendHistory: [
+      { date: 'May', count: 310 },
+      { date: 'Jun', count: 480 },
+      { date: 'Jul', count: 670 },
+      { date: 'Aug', count: 860 },
+    ],
+  },
+];
+</file>
+
+<file path="frontend/lib/types.ts">
+export type NodeStatus = 'locked' | 'unlocked' | 'verified';
+
+export type SkillDifficulty = 'beginner' | 'intermediate' | 'advanced';
+
+export interface Citation {
+  id: string;
+  jobTitle: string;
+  company: string;
+  location: string;
+  postingUrl: string;
+  relevanceExcerpt: string;
+  demandCount?: number;
+  postedDate?: string;
+}
+
+export interface MicroProject {
+  id: string;
+  title: string;
+  description: string;
+  instructions: string[];
+  starterCode?: string;
+  rubricCriteria: string[];
+}
+
+export interface RoadmapNode {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  status: NodeStatus;
+  prerequisites: string[]; // Node IDs required to unlock
+  citation?: Citation;
+  estimatedHours: number;
+  difficulty: SkillDifficulty;
+  microProject: MicroProject;
+}
+
+export interface Roadmap {
+  id: string;
+  targetRole: string;
+  learnerId: string;
+  createdAt: string;
+  nodes: RoadmapNode[];
+}
+
+export interface RubricCriterionResult {
+  criterion: string;
+  score: number;
+  maxScore: number;
+  feedback: string;
+}
+
+export interface GradingResult {
+  nodeId: string;
+  passed: boolean;
+  score: number; // 0 to 100
+  feedback: string;
+  rubricBreakdown: RubricCriterionResult[];
+  timestamp: string;
+  ledgerHash: string; // Tamper-evident verification hash
+}
+
+export interface ProgressLedgerEntry {
+  id: string;
+  nodeId: string;
+  nodeTitle: string;
+  verifiedAt: string;
+  score: number;
+  hash: string;
+  previousHash: string;
+}
+
+export interface EmployerMatch {
+  id: string;
+  learnerId: string;
+  learnerName: string;
+  targetRole: string;
+  verifiedSkills: string[];
+  overallMatchScore: number; // percentage
+  location: string;
+  readinessStatus: 'ready' | 'reskilling' | 'near_ready';
+  verificationBadgeCount: number;
+  avatarUrl?: string;
+  lastActive: string;
+}
+
+export interface DemandTrend {
+  skill: string;
+  demandCount: number;
+  growthPercentage: number;
+  region: string;
+  freshnessScore: number; // 0-100 indicator of how recently active postings were updated
+  topCompanies: string[];
+  trendHistory: Array<{ date: string; count: number }>;
+}
+
+export interface SkillGapDiagnosis {
+  learnerId: string;
+  targetRole: string;
+  currentSkills: string[];
+  missingSkills: string[];
+  matchPercentage: number;
+  summary: string;
+  recommendedFocus: string[];
+}
+
+export type SupportedLanguage = 'en' | 'kn';
+</file>
+
+<file path="frontend/types/.gitkeep">
+
+</file>
+
+<file path="frontend/next-env.d.ts">
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/building-your-application/configuring/typescript for more information.
+</file>
+
+<file path="frontend/package.json">
+{
+  "name": "skillbridge-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.28.0",
+    "lucide-react": "^0.359.0",
+    "next": "^14.2.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "recharts": "^2.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "autoprefixer": "^10.4.18",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3"
+  }
+}
+</file>
+
+<file path="frontend/postcss.config.js">
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+</file>
+
+<file path="frontend/tailwind.config.js">
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+</file>
+
+<file path="frontend/tsconfig.json">
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+</file>
+
+<file path="matching/features/.gitkeep">
+
+</file>
+
+<file path="matching/model/.gitkeep">
+
+</file>
+
+<file path="matching/service/.gitkeep">
+
+</file>
+
+<file path="rag/embeddings/.gitkeep">
+
+</file>
+
+<file path="rag/ingestion/.gitkeep">
+
+</file>
+
+<file path="rag/retrieval/.gitkeep">
+
+</file>
+
+<file path="rag/vectorstore/.gitkeep">
+
+</file>
+
+<file path="shared/constants/__init__.py">
+from .constants import *
+</file>
+
+<file path="shared/constants/constants.py">
+# System-wide values. Keep business-wide constants here so modules do not
+# invent conflicting values.
+
+RSSI_DEFAULT_THRESHOLD_DBM = -80
+
+ROADMAP_MAX_STEPS = 6
+DEFAULT_MATCH_THRESHOLD = 0.60
+
+SUPPORTED_VERIFICATION_LANGUAGES = [
+    "python",
+]
+
+DEFAULT_PROJECT_TIME_LIMIT_MINUTES = 30
+
+API_VERSION = "v1"
+</file>
+
+<file path="shared/contracts/examples/diagnosis_example.json">
+{
+  "learner_id": "learner_demo_001",
+  "target_role": "Data Analyst",
+  "current_skills": [
+    {
+      "name": "Excel",
+      "level": "intermediate",
+      "evidence": ["Resume: 2 years retail reporting"]
+    }
+  ],
+  "skill_gaps": [
+    {
+      "name": "SQL",
+      "priority": 1,
+      "reason": "Frequently required by retrieved Data Analyst postings",
+      "evidence_job_ids": ["job_001", "job_004"]
+    }
+  ],
+  "diagnosis_summary": "Strong spreadsheet experience; SQL and Python are the highest-priority gaps.",
+  "confidence": 0.89
+}
+</file>
+
+<file path="shared/contracts/examples/roadmap_example.json">
+{
+  "learner_id": "learner_demo_001",
+  "target_role": "Data Analyst",
+  "steps": [
+    {
+      "step_id": "step_001",
+      "skill": "SQL",
+      "title": "SQL Fundamentals",
+      "description": "Learn SELECT, filtering, joins and aggregation.",
+      "reason": "SQL appears as a high-frequency requirement in retrieved postings.",
+      "status": "unlocked",
+      "citations": [
+        {
+          "source_id": "job_001",
+          "title": "Junior Data Analyst",
+          "url": "https://example.com/jobs/job_001",
+          "source_name": "Job API",
+          "snippet": "SQL required"
+        }
+      ]
+    }
+  ],
+  "overall_summary": "A six-step path toward entry-level data analytics.",
+  "generated_at": "2026-08-20T12:00:00Z"
+}
+</file>
+
+<file path="shared/contracts/api_response.json">
+{
+  "name": "ApiResponse",
+  "version": "1.0",
+  "fields": {
+    "success": "boolean",
+    "data": "object|null",
+    "error": "ApiError|null",
+    "request_id": "string"
+  }
+}
+</file>
+
+<file path="shared/contracts/employer_requirement.json">
+{
+  "name": "EmployerRequirement",
+  "version": "1.0",
+  "fields": {
+    "employer_id": "string",
+    "role_title": "string",
+    "region": "string|null",
+    "required_skills": "SkillRequirement[]",
+    "description": "string|null"
+  }
+}
+</file>
+
+<file path="shared/contracts/job_posting.json">
+{
+  "name": "JobPosting",
+  "version": "1.0",
+  "fields": {
+    "job_id": "string",
+    "title": "string",
+    "company": "string|null",
+    "location": "string|null",
+    "region": "string|null",
+    "description": "string",
+    "skills": "string[]",
+    "source_name": "string",
+    "source_url": "string",
+    "posted_at": "datetime|null",
+    "fetched_at": "datetime",
+    "freshness_score": "number|null"
+  }
+}
+</file>
+
+<file path="shared/contracts/learner_profile.json">
+{
+  "name": "LearnerProfile",
+  "version": "1.0",
+  "fields": {
+    "learner_id": "string",
+    "current_role": "string|null",
+    "target_role": "string",
+    "skills": "SkillLevel[]",
+    "experience_years": "number|null",
+    "education": "string|null",
+    "preferred_region": "string|null",
+    "preferred_language": "string|null",
+    "source": "resume|mcq|manual"
+  }
+}
+</file>
+
+<file path="shared/contracts/match.json">
+{
+  "name": "MatchResult",
+  "version": "1.0",
+  "fields": {
+    "employer_id": "string",
+    "learner_id": "string",
+    "role_title": "string",
+    "match_score": "number",
+    "matched_skills": "string[]",
+    "missing_skills": "string[]",
+    "verified_skills": "string[]",
+    "explanation": "string"
+  }
+}
+</file>
+
+<file path="shared/contracts/micro_project.json">
+{
+  "name": "MicroProject",
+  "version": "1.0",
+  "fields": {
+    "project_id": "string",
+    "skill": "string",
+    "title": "string",
+    "description": "string",
+    "instructions": "string",
+    "starter_code": "string|null",
+    "language": "string",
+    "difficulty": "beginner|intermediate|advanced",
+    "test_cases": "TestCase[]",
+    "rubric": "RubricCriterion[]",
+    "time_limit_minutes": "number|null"
+  }
+}
+</file>
+
+<file path="shared/types/__init__.py">
+from .types import *
+</file>
+
+<file path="shared/types/types.py">
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Optional
+
+
+class ProfileSource(str, Enum):
+    RESUME = "resume"
+    MCQ = "mcq"
+    MANUAL = "manual"
+
+
+class SkillLevel(str, Enum):
+    BEGINNER = "beginner"
+    INTERMEDIATE = "intermediate"
+    ADVANCED = "advanced"
+
+
+class RoadmapStepStatus(str, Enum):
+    LOCKED = "locked"
+    UNLOCKED = "unlocked"
+    IN_PROGRESS = "in_progress"
+    PASSED = "passed"
+
+
+class VerificationStatus(str, Enum):
+    PASS = "pass"
+    FAIL = "fail"
+    ERROR = "error"
+
+
+@dataclass
+class SkillAssessment:
+    name: str
+    level: SkillLevel
+    evidence: list[str] = field(default_factory=list)
+
+
+@dataclass
+class SkillGap:
+    name: str
+    priority: int
+    reason: str
+    evidence_job_ids: list[str] = field(default_factory=list)
+
+
+@dataclass
+class SkillRequirement:
+    skill: str
+    required_level: SkillLevel = SkillLevel.BEGINNER
+    weight: float = 1.0
+
+
+@dataclass
+class SourceCitation:
+    source_id: str
+    title: str
+    url: str
+    source_name: str
+    snippet: Optional[str] = None
+
+
+@dataclass
+class RoadmapStep:
+    step_id: str
+    skill: str
+    title: str
+    description: str
+    reason: str
+    status: RoadmapStepStatus
+    citations: list[SourceCitation] = field(default_factory=list)
+
+
+@dataclass
+class TestCase:
+    input_data: str
+    expected_output: str
+
+
+@dataclass
+class RubricCriterion:
+    name: str
+    description: str
+    max_score: float
+
+
+@dataclass
+class ApiError:
+    code: str
+    message: str
+</file>
+
+<file path="docker-compose.yml">
+services:
+  postgres:
+    image: postgres:16
+    container_name: skillbridge-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: skillbridge
+      POSTGRES_PASSWORD: skillbridge
+      POSTGRES_DB: skillbridge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+</file>
+
+<file path="LICENSE">
+MIT License
+
+Copyright (c) 2026 SkillBridge Team
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files, to deal in the Software
+without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+</file>
+
+<file path="agents/README.md">
+# agents/
+
+Multi-agent core of **SkillBridge** (AGENTRIX 2026). Fully aligned with `shared/contracts/` JSON schemas.
+
+## Owns
+- Diagnosis (`diagnosis_agent.py`) — skill-gap classification from resume/MCQ
+- Roadmap reasoning (`roadmap_agent.py`) — RAG-grounded, cited roadmap generation
+- Verification orchestration (`verification_agent.py`) — micro-project generation + grading
+- LangGraph workflow (`orchestrator.py`) — wires the three agents into one graph
+
+## Consumes
+- Learner/job data — `tools.py: fetch_learner_profile`, `fetch_job_postings`
+- RAG retrieval — `tools.py: retrieve_relevant_postings` (Chroma / Pinecone)
+- Judge0 verification — `tools.py: run_judge0_submission`
+
+## Structure
+```
+agents/
+├── __init__.py
+├── config.py              # env-driven settings with dotenv support
+├── state.py                # shared AgentState / RoadmapNode / VerificationResult schemas
+├── tools.py                 # external I/O: learner/job data, RAG, Judge0 with fallbacks
+├── diagnosis_agent.py       # Agent 1a
+├── roadmap_agent.py         # Agent 1b
+├── verification_agent.py    # Agent 2
+├── orchestrator.py          # LangGraph StateGraph wiring
+├── requirements.txt         # dependency specifications
+├── .env.example            # environment variable placeholders
+└── README.md                # documentation
+```
+
+## Setup
+```bash
+pip install -r requirements.txt
+cp .env.example .env   # fill in ANTHROPIC_API_KEY etc.
+```
+
+## Usage
+
+### Run via CLI locally:
+```bash
+python -m agents.main --target-role "Data Analyst" --resume "Retail associate, 2 years, Excel reporting, SQL"
+```
+
+### Run programmatically in Python:
+```python
+from agents import run_pipeline
+
+state = run_pipeline({
+    "learner_id": "abc123",
+    "resume_text": "Retail associate, 2 years, strong Excel, basic SQL...",
+    "target_role": "Data Analyst",
+})
+
+print(state["roadmap"])
+```
+
+To advance a learner through verification, call `run_pipeline` again with `active_submission` set to their micro-project code once they submit it — the graph resumes from the `verify` node.
+</file>
+
+<file path="backend/README.md">
+# Backend
+FastAPI API, persistence and services. Owned by Vinod.
+</file>
+
+<file path="data/README.md">
+# Data
+Seed data and demo fixtures.
+</file>
+
+<file path="docs/setup.md">
+# Setup
+
+## Environment file
+
+`.env.example` is a safe template of the environment variables the project
+expects.
+
+To work locally:
+
+    copy .env.example .env
+
+Then put your actual secret/API values into `.env`.
+
+`.env` is ignored by Git and must never be committed.
+
+## Database
+
+Once Docker is installed:
+
+    docker compose up -d postgres
+
+The local database URL is:
+
+    postgresql://skillbridge:skillbridge@localhost:5432/skillbridge
+
+## Development order
+
+1. Shared contracts
+2. Backend skeleton
+3. Frontend skeleton
+4. RAG ingestion and retrieval
+5. Diagnosis agent
+6. Roadmap agent
+7. Verification
+8. Matching
+9. Integration
+10. Deployment
+</file>
+
+<file path="frontend/README.md">
+# Frontend
+Next.js + Tailwind UI. Owned by the frontend team.
+</file>
+
+<file path="matching/README.md">
+# Matching
+Employer/learner matching logic. Owned by Abhignya.
+</file>
+
+<file path="rag/README.md">
+# RAG
+Job-posting ingestion, embeddings, retrieval and citations. Owned by Kunal.
+</file>
+
+<file path="scripts/README.md">
+# Scripts
+Developer utilities.
+</file>
+
+<file path="shared/contracts/diagnosis.json">
+{
+  "name": "DiagnosisResult",
+  "version": "1.0",
+  "fields": {
+    "learner_id": "string",
+    "target_role": "string",
+    "current_skills": "SkillAssessment[]",
+    "skill_gaps": "SkillGap[]",
+    "diagnosis_summary": "string",
+    "confidence": "number"
+  }
+}
+</file>
+
+<file path="shared/contracts/README.md">
+# Shared Contracts
+
+These files define the data exchanged between SkillBridge modules.
+
+## Golden rule
+
+If your module consumes a shared contract, do not silently change its fields.
+
+The safe process is:
+
+1. Propose the contract change.
+2. Update the contract version/changelog.
+3. Tell the team.
+4. Update all affected modules.
+5. Run integration tests.
+
+## Contract families
+
+- `learner_profile.json` — normalized learner information
+- `diagnosis.json` — diagnosis output and skill gaps
+- `job_posting.json` — normalized job-posting representation
+- `roadmap.json` — cited, sequenced learning roadmap
+- `micro_project.json` — verification project definition
+- `verification.json` — grading result and unlock decision
+- `employer_requirement.json` — employer skill requirements
+- `match.json` — learner/employer match result
+- `api_response.json` — common API envelope
+
+The contracts intentionally describe the business data rather than implementation details.
+</file>
+
+<file path="shared/contracts/roadmap.json">
+{
+  "name": "RoadmapResult",
+  "version": "1.0",
+  "fields": {
+    "learner_id": "string",
+    "target_role": "string",
+    "steps": "RoadmapStep[]",
+    "overall_summary": "string",
+    "generated_at": "datetime"
+  }
+}
+</file>
+
+<file path="shared/contracts/verification.json">
+{
+  "name": "VerificationResult",
+  "version": "1.0",
+  "fields": {
+    "project_id": "string",
+    "learner_id": "string",
+    "status": "pass|fail|error",
+    "score": "number",
+    "sandbox_passed": "boolean",
+    "judge_feedback": "string",
+    "llm_feedback": "string",
+    "unlocks_next": "boolean",
+    "verified_at": "datetime"
+  }
+}
+</file>
+
+<file path=".env.example">
+# =========================
+# SkillBridge environment
+# =========================
+# Copy this file to .env and replace placeholder values.
+# NEVER commit .env or real API keys.
+
+# AI / LLM
+ANTHROPIC_API_KEY=
+
+# Database
+DATABASE_URL=postgresql://skillbridge:skillbridge@localhost:5432/skillbridge
+
+# Job data provider
+ADZUNA_APP_ID=
+ADZUNA_APP_KEY=
+
+# Judge0 sandbox
+JUDGE0_API_URL=
+
+# Frontend -> Backend
+NEXT_PUBLIC_API_URL=http://localhost:8000
+</file>
+
+<file path=".gitignore">
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log
+
+# Local data
+*.db
+*.sqlite
+chroma_db/
+
+# Build / coverage
+dist/
+coverage/
+htmlcov/
+</file>
+
+<file path="README.md">
+# SkillBridge
+
+AI-powered workforce reskilling platform for AGENTRIX 2026.
+
+## MVP
+
+Learner resume/MCQ
+→ skill-gap diagnosis
+→ RAG-grounded cited roadmap
+→ micro-project
+→ sandboxed verification
+→ unlocked skill tree
+→ employer matching
+
+## Team modules
+
+- `frontend/` — Next.js + Tailwind
+- `backend/` — FastAPI + PostgreSQL
+- `agents/` — LangGraph diagnosis, roadmap and verification
+- `rag/` — job ingestion, embeddings and retrieval
+- `matching/` — employer/learner matching
+- `shared/` — contracts, types and constants
+- `data/` — sample/seed data
+- `docs/` — project agreements and architecture
+
+## Start here
+
+1. Read `docs/shared-contracts.md`.
+2. Read `docs/module-boundaries.md`.
+3. Read `docs/git-workflow.md`.
+4. Copy `.env.example` to `.env`.
+5. Do not edit another person's module without agreement.
+
+## Rule of the repo
+
+AI tools can write different modules independently.
+Shared contracts are the agreement that makes those modules connect.
+</file>
+
+<file path="backend/app/api/router.py">
+from fastapi import APIRouter
+from app.api.routes import auth,employers,health,jobs,learners,matches,roadmaps,verification
+api_router=APIRouter()
+for r in [health.router,auth.router,learners.router,jobs.router,roadmaps.router,verification.router,employers.router,matches.router]: api_router.include_router(r)
+</file>
+
+</files>

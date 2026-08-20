@@ -1,0 +1,17 @@
+{
+  "name": "MicroProject",
+  "version": "1.0",
+  "fields": {
+    "project_id": "string",
+    "skill": "string",
+    "title": "string",
+    "description": "string",
+    "instructions": "string",
+    "starter_code": "string|null",
+    "language": "string",
+    "difficulty": "beginner|intermediate|advanced",
+    "test_cases": "TestCase[]",
+    "rubric": "RubricCriterion[]",
+    "time_limit_minutes": "number|null"
+  }
+}
