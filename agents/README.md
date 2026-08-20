@@ -1,3 +1,2 @@
 # Agents
-
-LangGraph diagnosis, roadmap and verification agents go here.
+LangGraph diagnosis, roadmap and verification. Owned by Kunal.

@@ -1,3 +1,2 @@
 # Backend
-
-FastAPI application, database models and API services go here.
+FastAPI API, persistence and services. Owned by Vinod.

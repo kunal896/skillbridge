@@ -1,0 +1,14 @@
+{
+  "name": "MatchResult",
+  "version": "1.0",
+  "fields": {
+    "employer_id": "string",
+    "learner_id": "string",
+    "role_title": "string",
+    "match_score": "number",
+    "matched_skills": "string[]",
+    "missing_skills": "string[]",
+    "verified_skills": "string[]",
+    "explanation": "string"
+  }
+}

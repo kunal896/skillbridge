@@ -1,3 +1,2 @@
 # Matching
-
-Learner/employer matching logic goes here.
+Employer/learner matching logic. Owned by Abhignya.

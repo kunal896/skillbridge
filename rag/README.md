@@ -1,3 +1,2 @@
 # RAG
-
-Job-posting ingestion, embeddings and retrieval go here.
+Job-posting ingestion, embeddings, retrieval and citations. Owned by Kunal.

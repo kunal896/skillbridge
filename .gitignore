@@ -1,4 +1,4 @@
-# Environment
+# Environment / secrets
 .env
 .env.*
 !.env.example
@@ -25,7 +25,12 @@ out/
 # Logs
 *.log
 
-# Local databases / vector stores
+# Local data
 *.db
 *.sqlite
 chroma_db/
+
+# Build / coverage
+dist/
+coverage/
+htmlcov/

@@ -1,3 +1,2 @@
 # Frontend
-
-Next.js + Tailwind application. UI implementation goes here.
+Next.js + Tailwind UI. Owned by the frontend team.

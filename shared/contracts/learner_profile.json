@@ -1,0 +1,15 @@
+{
+  "name": "LearnerProfile",
+  "version": "1.0",
+  "fields": {
+    "learner_id": "string",
+    "current_role": "string|null",
+    "target_role": "string",
+    "skills": "SkillLevel[]",
+    "experience_years": "number|null",
+    "education": "string|null",
+    "preferred_region": "string|null",
+    "preferred_language": "string|null",
+    "source": "resume|mcq|manual"
+  }
+}

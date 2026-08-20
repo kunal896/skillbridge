@@ -1,3 +1,2 @@
 # Data
-
-Seed data, demo job postings and sample users go here.
+Seed data and demo fixtures.

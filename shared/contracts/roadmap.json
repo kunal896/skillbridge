@@ -2,8 +2,10 @@
   "name": "RoadmapResult",
   "version": "1.0",
   "fields": {
+    "learner_id": "string",
     "target_role": "string",
-    "steps": "array",
-    "sources": "array"
+    "steps": "RoadmapStep[]",
+    "overall_summary": "string",
+    "generated_at": "datetime"
   }
 }
