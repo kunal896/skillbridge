@@ -1,0 +1,15 @@
+{
+  "name": "VerificationResult",
+  "version": "1.0",
+  "fields": {
+    "project_id": "string",
+    "learner_id": "string",
+    "status": "pass|fail|error",
+    "score": "number",
+    "sandbox_passed": "boolean",
+    "judge_feedback": "string",
+    "llm_feedback": "string",
+    "unlocks_next": "boolean",
+    "verified_at": "datetime"
+  }
+}

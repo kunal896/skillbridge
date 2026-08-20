@@ -1,0 +1,21 @@
+{
+  "learner_id": "learner_demo_001",
+  "target_role": "Data Analyst",
+  "current_skills": [
+    {
+      "name": "Excel",
+      "level": "intermediate",
+      "evidence": ["Resume: 2 years retail reporting"]
+    }
+  ],
+  "skill_gaps": [
+    {
+      "name": "SQL",
+      "priority": 1,
+      "reason": "Frequently required by retrieved Data Analyst postings",
+      "evidence_job_ids": ["job_001", "job_004"]
+    }
+  ],
+  "diagnosis_summary": "Strong spreadsheet experience; SQL and Python are the highest-priority gaps.",
+  "confidence": 0.89
+}

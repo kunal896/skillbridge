@@ -1,0 +1,11 @@
+{
+  "name": "EmployerRequirement",
+  "version": "1.0",
+  "fields": {
+    "employer_id": "string",
+    "role_title": "string",
+    "region": "string|null",
+    "required_skills": "SkillRequirement[]",
+    "description": "string|null"
+  }
+}

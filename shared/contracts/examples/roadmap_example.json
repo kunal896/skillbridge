@@ -1,0 +1,25 @@
+{
+  "learner_id": "learner_demo_001",
+  "target_role": "Data Analyst",
+  "steps": [
+    {
+      "step_id": "step_001",
+      "skill": "SQL",
+      "title": "SQL Fundamentals",
+      "description": "Learn SELECT, filtering, joins and aggregation.",
+      "reason": "SQL appears as a high-frequency requirement in retrieved postings.",
+      "status": "unlocked",
+      "citations": [
+        {
+          "source_id": "job_001",
+          "title": "Junior Data Analyst",
+          "url": "https://example.com/jobs/job_001",
+          "source_name": "Job API",
+          "snippet": "SQL required"
+        }
+      ]
+    }
+  ],
+  "overall_summary": "A six-step path toward entry-level data analytics.",
+  "generated_at": "2026-08-20T12:00:00Z"
+}

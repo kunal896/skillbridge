@@ -1,0 +1,67 @@
+{
+  "nav": {
+    "brand": "SkillBridge",
+    "home": "Home",
+    "onboarding": "Diagnosis",
+    "roadmap": "Skill Tree",
+    "dashboard": "Demand Analytics",
+    "employer": "Verified Talent",
+    "profile": "Profile"
+  },
+  "common": {
+    "loading": "Loading data...",
+    "error": "An unexpected error occurred",
+    "retry": "Try Again",
+    "lowBandwidthOn": "Low-Bandwidth Mode ON",
+    "lowBandwidthOff": "Low-Bandwidth Mode OFF",
+    "language": "Language",
+    "verified": "Verified",
+    "locked": "Locked",
+    "inProgress": "In Progress",
+    "hours": "hrs",
+    "viewPosting": "View Job Posting",
+    "citation": "Job Market Citation",
+    "prerequisites": "Prerequisites",
+    "difficulty": "Difficulty",
+    "submit": "Submit Code",
+    "submitting": "Evaluating with LLM Judge..."
+  },
+  "landing": {
+    "heroTitle": "Reskilling Driven by Real Job Market Citations",
+    "heroSubtitle": "SkillBridge sequences personalized learning paths where every node is backed by real employer job postings and verified through sandboxed micro-projects.",
+    "ctaStart": "Diagnose My Skill Gap",
+    "ctaEmployer": "Hire Verified Candidates",
+    "feature1Title": "Cited Roadmaps",
+    "feature1Desc": "No generic course lists. Every skill node links to active job market postings requiring that exact skill.",
+    "feature2Title": "LLM-Graded Micro Projects",
+    "feature2Desc": "Prove your capability through hands-on code challenges evaluated against structured rubrics.",
+    "feature3Title": "Tamper-Evident Verification",
+    "feature3Desc": "Skills are backed by cryptographic ledger records—giving employers proof, not self-reported promises."
+  },
+  "roadmap": {
+    "title": "Interactive Skill Tree",
+    "subtitle": "Pass micro-projects to unlock next-level skills. Every step is cited by active job market data.",
+    "selectNode": "Select a node to inspect citations and attempt micro-projects",
+    "noCitation": "Core foundational skill (General Requirement)"
+  },
+  "verification": {
+    "title": "Micro-Project Verification Workspace",
+    "rubricHeader": "Evaluation Rubric Breakdown",
+    "ledgerHash": "Verification Hash",
+    "passed": "Verification Passed! Skill Node Unlocked.",
+    "failed": "Verification Not Passed. Review feedback and retry."
+  },
+  "demand": {
+    "title": "Live Skill Demand Analytics",
+    "subtitle": "Real-time skill requirements extracted from regional job postings.",
+    "freshness": "Data Freshness Score",
+    "filterRegion": "Filter by Region"
+  },
+  "employer": {
+    "title": "Verified Candidate Matching",
+    "subtitle": "Discover candidates with tamper-evident proof of practical skill mastery.",
+    "matchScore": "Match Score",
+    "readiness": "Readiness",
+    "verifiedSkills": "Verified Skills"
+  }
+}
